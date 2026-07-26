@@ -1,0 +1,84 @@
+name: Tester feedback
+description: Report how an early AutoEdit cut went (usable? Apply? misses?)
+title: "[Test] "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing. A short, concrete report beats screenshots alone.
+        Guide: https://github.com/rgilvert-alt/auto-edit-davinci-resolve/blob/main/docs/TESTING.md
+  - type: input
+    id: os
+    attributes:
+      label: macOS version
+      placeholder: "e.g. 15.5"
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "e.g. 3.12.8"
+    validations:
+      required: true
+  - type: input
+    id: resolve
+    attributes:
+      label: DaVinci Resolve version
+      placeholder: "e.g. Studio 19.1"
+    validations:
+      required: true
+  - type: input
+    id: clips
+    attributes:
+      label: Rough clip count / total duration
+      placeholder: "e.g. 12 clips, ~40 min source"
+  - type: dropdown
+    id: music
+    attributes:
+      label: Music attached?
+      options:
+        - "No"
+        - "Yes"
+  - type: dropdown
+    id: create
+    attributes:
+      label: Create First Cut
+      options:
+        - Succeeded
+        - Failed
+        - Partial / warnings
+    validations:
+      required: true
+  - type: dropdown
+    id: apply
+    attributes:
+      label: Apply to Resolve
+      options:
+        - Succeeded
+        - Failed
+        - Did not try
+    validations:
+      required: true
+  - type: dropdown
+    id: usable
+    attributes:
+      label: Was the cut usable as a rough cut?
+      options:
+        - Yes — I'd start from it
+        - Mixed — some keeps, lots of wrong selects
+        - No — not useful
+        - Did not judge
+    validations:
+      required: true
+  - type: textarea
+    id: miss
+    attributes:
+      label: Worst miss (one sentence)
+      placeholder: e.g. Ignored the climax beat / parked on one reel / too jumpy
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      placeholder: Warnings, UI issues, story brief you used (optional)

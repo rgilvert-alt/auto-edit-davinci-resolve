@@ -1,5 +1,9 @@
 # Auto Edit — DaVinci Resolve
 
+[![CI](https://github.com/rgilvert-alt/auto-edit-davinci-resolve/actions/workflows/ci.yml/badge.svg)](https://github.com/rgilvert-alt/auto-edit-davinci-resolve/actions/workflows/ci.yml)
+![Requires DaVinci Resolve Studio](https://img.shields.io/badge/Requires-DaVinci%20Resolve%20Studio-black)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 Auto-edit engine for **DaVinci Resolve Studio**. Paste a **Story**, analyze adventure/travel footage, refine a documented **first cut**, then apply through the single Resolve path.
 
 ```text
@@ -7,6 +11,8 @@ MediaCatalogue → Storyboard → EditPlan → applier.py → Resolve
 ```
 
 Planning never mutates timelines directly. Surfaces: **desktop UI** (`autoedit-ui`), Typer CLI, optional FastMCP.
+
+**Looking for Resolve editors to try an early cut:** see [docs/TESTING.md](docs/TESTING.md) (5-step smoke test + what feedback helps). Latest source release: [v0.1.0](https://github.com/rgilvert-alt/auto-edit-davinci-resolve/releases/tag/v0.1.0).
 
 ## Modes
 
@@ -18,6 +24,26 @@ Planning never mutates timelines directly. Surfaces: **desktop UI** (`autoedit-u
 | silence / transcript / scenes / analyze | Single-clip or catalogue CLI utilities |
 
 Adventure footage often has little speech — Story treats text as **editorial intent**, not dialogue to match word-for-word. See [docs/STORYBOARD.md](docs/STORYBOARD.md).
+
+## Try it (5 minutes)
+
+Requires **macOS**, **ffmpeg**, **Python 3.10+**, and **DaVinci Resolve Studio** (Local scripting) for Apply. Planning works without Resolve.
+
+```bash
+git clone https://github.com/rgilvert-alt/auto-edit-davinci-resolve.git
+cd auto-edit-davinci-resolve
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[ui]"
+cp .env.example .env   # fill Resolve paths — see docs/SETUP.md
+autoedit-ui
+```
+
+1. Add a handful of clips (+ optional music)
+2. Paste a short Story brief
+3. **Create First Cut**
+4. Optionally Lock / Swap / Trim shots, then **Apply to Resolve**
+
+Full tester checklist and a ready-to-paste invite: [docs/TESTING.md](docs/TESTING.md).
 
 ## Two frame clocks
 
@@ -122,7 +148,7 @@ CI runs unit tests on Python 3.10 and 3.12 without Resolve. Analysis cache lives
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Testers: [docs/TESTING.md](docs/TESTING.md).
 
 ## License
 

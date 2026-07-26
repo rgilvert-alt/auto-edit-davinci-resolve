@@ -42,3 +42,5 @@ See [docs/STORYBOARD.md](docs/STORYBOARD.md), [docs/SETUP.md](docs/SETUP.md), an
 ## Issues
 
 Include OS, Python version, Resolve version (if relevant), and the command or UI step that failed. For bad first cuts, a short story brief + how many clips helps more than screenshots alone.
+
+Early testers: use the **Tester feedback** issue template or follow [docs/TESTING.md](docs/TESTING.md).

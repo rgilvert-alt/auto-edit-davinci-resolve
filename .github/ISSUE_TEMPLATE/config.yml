@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discussions
+    url: https://github.com/rgilvert-alt/auto-edit-davinci-resolve/discussions
+    about: Questions, show-and-tell, and early tester chat
+  - name: Tester guide
+    url: https://github.com/rgilvert-alt/auto-edit-davinci-resolve/blob/main/docs/TESTING.md
+    about: Smoke test steps and what feedback helps
