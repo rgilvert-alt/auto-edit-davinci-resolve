@@ -1,0 +1,414 @@
+{
+  "schema_version": 2,
+  "title": "Analysis Evidence",
+  "target_duration_s": 20.0,
+  "timeline_fps": 30.0,
+  "style": "Travel montage",
+  "analysis_warnings": [],
+  "slots": [
+    {
+      "id": "s1",
+      "role": "opening",
+      "duration_s": 4.19,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "low",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 0.0,
+        "duration_s": 4.19,
+        "score": 0.93,
+        "reason": "matches 'Create a high energy enduro ride through' (0.32 CLIP); duration fits; steady; moderate motion; chronological fit",
+        "descriptor": "dirt bike, gravel road, muddy track \u2014 moderate motion",
+        "tags": [
+          "dirt bike",
+          "gravel road",
+          "muddy track",
+          "POV riding shot"
+        ],
+        "score_parts": {
+          "quality": 0.178,
+          "duration": 0.12,
+          "energy": -0.05,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.142,
+          "speech": 0.03,
+          "chronology": 0.22
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "role": "progression",
+      "duration_s": 2.33,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "medium",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 7.236,
+        "duration_s": 2.33,
+        "score": 0.843,
+        "reason": "matches 'Create a high energy enduro ride through' (0.31 CLIP); duration fits; steady; moderate motion; same file as previous shot; chronological fit",
+        "descriptor": "gravel road, dirt bike, muddy track \u2014 moderate motion",
+        "tags": [
+          "gravel road",
+          "dirt bike",
+          "muddy track",
+          "tracking shot"
+        ],
+        "score_parts": {
+          "quality": 0.169,
+          "duration": 0.12,
+          "energy": 0.04,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.14,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.204
+        }
+      }
+    },
+    {
+      "id": "s3",
+      "role": "progression",
+      "duration_s": 2.33,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "medium",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 9.566,
+        "duration_s": 2.33,
+        "score": 0.849,
+        "reason": "matches 'Create a high energy enduro ride through' (0.31 CLIP); duration fits; steady; moderate motion; same file as previous shot; chronological fit",
+        "descriptor": "gravel road, dirt bike, muddy track \u2014 moderate motion",
+        "tags": [
+          "gravel road",
+          "dirt bike",
+          "muddy track",
+          "tracking shot"
+        ],
+        "score_parts": {
+          "quality": 0.169,
+          "duration": 0.12,
+          "energy": 0.04,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.14,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.209
+        }
+      }
+    },
+    {
+      "id": "s4",
+      "role": "climax",
+      "duration_s": 1.63,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "high",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 14.472,
+        "duration_s": 1.63,
+        "score": 0.921,
+        "reason": "matches 'Create a high energy enduro ride through' (0.32 CLIP); duration fits; energy=high; steady; moderate motion; same file as previous shot; chronological fit",
+        "descriptor": "dirt bike, muddy track, gravel road \u2014 moderate motion",
+        "tags": [
+          "dirt bike",
+          "muddy track",
+          "gravel road",
+          "POV riding shot"
+        ],
+        "score_parts": {
+          "quality": 0.173,
+          "duration": 0.12,
+          "energy": 0.1,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.143,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.215
+        }
+      }
+    },
+    {
+      "id": "s5",
+      "role": "climax",
+      "duration_s": 1.63,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "high",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 16.102,
+        "duration_s": 1.63,
+        "score": 0.904,
+        "reason": "matches 'Create a high energy enduro ride through' (0.32 CLIP); duration fits; energy=high; steady; moderate motion; same file as previous shot; chronological fit",
+        "descriptor": "dirt bike, muddy track, gravel road \u2014 moderate motion",
+        "tags": [
+          "dirt bike",
+          "muddy track",
+          "gravel road",
+          "POV riding shot"
+        ],
+        "score_parts": {
+          "quality": 0.173,
+          "duration": 0.12,
+          "energy": 0.1,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.143,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.198
+        }
+      }
+    },
+    {
+      "id": "s6",
+      "role": "climax",
+      "duration_s": 1.63,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "high",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 21.708,
+        "duration_s": 1.63,
+        "score": 0.916,
+        "reason": "matches 'Create a high energy enduro ride through' (0.31 CLIP); duration fits; energy=high; steady; moderate motion; same file as previous shot; chronological fit",
+        "descriptor": "dirt bike, muddy track, gravel road \u2014 moderate motion",
+        "tags": [
+          "dirt bike",
+          "muddy track",
+          "gravel road",
+          "tracking shot"
+        ],
+        "score_parts": {
+          "quality": 0.171,
+          "duration": 0.12,
+          "energy": 0.1,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.14,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.214
+        }
+      }
+    },
+    {
+      "id": "s7",
+      "role": "climax",
+      "duration_s": 1.63,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "high",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 28.944,
+        "duration_s": 1.63,
+        "score": 0.917,
+        "reason": "matches 'Create a high energy enduro ride through' (0.31 CLIP); duration fits; energy=high; steady; moderate motion; same file as previous shot; chronological fit",
+        "descriptor": "dirt bike, gravel road, muddy track \u2014 moderate motion",
+        "tags": [
+          "dirt bike",
+          "gravel road",
+          "muddy track",
+          "POV riding shot"
+        ],
+        "score_parts": {
+          "quality": 0.178,
+          "duration": 0.12,
+          "energy": 0.1,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.14,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.209
+        }
+      }
+    },
+    {
+      "id": "s8",
+      "role": "resolution",
+      "duration_s": 2.33,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "medium",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 30.574,
+        "duration_s": 2.33,
+        "score": 0.852,
+        "reason": "matches 'Create a high energy enduro ride through' (0.31 CLIP); duration fits; steady; moderate motion; same file as previous shot; chronological fit",
+        "descriptor": "dirt bike, gravel road, muddy track \u2014 moderate motion",
+        "tags": [
+          "dirt bike",
+          "gravel road",
+          "muddy track",
+          "POV riding shot"
+        ],
+        "score_parts": {
+          "quality": 0.178,
+          "duration": 0.12,
+          "energy": 0.04,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.14,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.203
+        }
+      }
+    },
+    {
+      "id": "s9",
+      "role": "resolution",
+      "duration_s": 2.33,
+      "intent": "Create a high energy enduro ride through the forest trail",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "medium",
+        "motion": null,
+        "tags": [
+          "motorcycle"
+        ],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+        "start_s": 32.904,
+        "duration_s": 2.33,
+        "score": 0.824,
+        "reason": "matches 'Create a high energy enduro ride through' (0.31 CLIP); duration fits; steady; moderate motion; same file as previous shot",
+        "descriptor": "dirt bike, gravel road, muddy track \u2014 moderate motion",
+        "tags": [
+          "dirt bike",
+          "gravel road",
+          "muddy track",
+          "POV riding shot"
+        ],
+        "score_parts": {
+          "quality": 0.178,
+          "duration": 0.12,
+          "energy": 0.04,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.14,
+          "speech": 0.03,
+          "variety": -0.15,
+          "chronology": 0.176
+        }
+      }
+    }
+  ]
+}

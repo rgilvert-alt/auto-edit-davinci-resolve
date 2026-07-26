@@ -1,0 +1,178 @@
+{
+  "schema_version": 2,
+  "title": "First Cut",
+  "target_duration_s": 6.0,
+  "timeline_fps": 30.0,
+  "style": "Adventure documentary",
+  "analysis_warnings": [],
+  "slots": [
+    {
+      "id": "s1",
+      "role": "opening",
+      "duration_s": 1.39,
+      "intent": "create a short story",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "low",
+        "motion": null,
+        "tags": [],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/Movies External/Dogs/IMG_7616.MOV",
+        "start_s": 0.0,
+        "duration_s": 1.39,
+        "score": 0.823,
+        "reason": "matches 'create a short story' (0.19 CLIP); duration fits; steady; moderate motion",
+        "descriptor": "muddy track, river crossing, tracking shot \u2014 moderate motion, steady",
+        "tags": [
+          "muddy track",
+          "river crossing",
+          "tracking shot",
+          "ATV"
+        ],
+        "score_parts": {
+          "quality": 0.184,
+          "duration": 0.12,
+          "energy": -0.05,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.085,
+          "speech": 0.03,
+          "chronology": 0.165
+        }
+      }
+    },
+    {
+      "id": "s2",
+      "role": "progression",
+      "duration_s": 1.39,
+      "intent": "create a short story",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "medium",
+        "motion": null,
+        "tags": [],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/Movies External/Dogs/IMG_7617.MOV",
+        "start_s": 0.0,
+        "duration_s": 1.39,
+        "score": 0.876,
+        "reason": "matches 'create a short story' (0.18 CLIP); duration fits; steady; moderate motion",
+        "descriptor": "muddy track, river crossing, tracking shot \u2014 moderate motion, steady",
+        "tags": [
+          "muddy track",
+          "river crossing",
+          "tracking shot",
+          "ATV"
+        ],
+        "score_parts": {
+          "quality": 0.187,
+          "duration": 0.12,
+          "energy": 0.04,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.081,
+          "speech": 0.03,
+          "chronology": 0.128
+        }
+      }
+    },
+    {
+      "id": "s3",
+      "role": "climax",
+      "duration_s": 1.82,
+      "intent": "create a short story",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "high",
+        "motion": null,
+        "tags": [],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/Movies External/Dogs/IMG_7616.MOV",
+        "start_s": 1.39,
+        "duration_s": 1.81,
+        "score": 0.936,
+        "reason": "matches 'create a short story' (0.19 CLIP); shorter than requested; using available length; energy=high; steady; moderate motion",
+        "descriptor": "muddy track, river crossing, tracking shot \u2014 moderate motion, steady",
+        "tags": [
+          "muddy track",
+          "river crossing",
+          "tracking shot",
+          "ATV"
+        ],
+        "score_parts": {
+          "quality": 0.184,
+          "duration": 0.119,
+          "energy": 0.1,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.085,
+          "speech": 0.03,
+          "chronology": 0.128
+        }
+      }
+    },
+    {
+      "id": "s4",
+      "role": "resolution",
+      "duration_s": 1.39,
+      "intent": "create a short story",
+      "prefer": {
+        "analysis": [
+          "scenes"
+        ],
+        "energy": "medium",
+        "motion": null,
+        "tags": [],
+        "min_duration_s": null
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/Movies External/Dogs/IMG_7617.MOV",
+        "start_s": 1.39,
+        "duration_s": 1.39,
+        "score": 0.913,
+        "reason": "matches 'create a short story' (0.18 CLIP); duration fits; steady; moderate motion",
+        "descriptor": "muddy track, river crossing, tracking shot \u2014 moderate motion, steady",
+        "tags": [
+          "muddy track",
+          "river crossing",
+          "tracking shot",
+          "ATV"
+        ],
+        "score_parts": {
+          "quality": 0.187,
+          "duration": 0.12,
+          "energy": 0.04,
+          "steady": 0.05,
+          "exposure": 0.04,
+          "clip": 0.081,
+          "speech": 0.03,
+          "chronology": 0.165
+        }
+      }
+    }
+  ]
+}

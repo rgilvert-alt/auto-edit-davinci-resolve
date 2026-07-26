@@ -1,0 +1,159 @@
+{
+  "analysis_version": 3,
+  "warnings": [],
+  "clips": [
+    {
+      "media_path": "/Volumes/ScrathPad/Enduro/GX011129.MP4",
+      "source_fps": 50.0,
+      "duration_s": 36.18,
+      "captured_at": "2025-11-15T15:22:04",
+      "segments": [
+        {
+          "id": "GX011129_001",
+          "start_s": 0.0,
+          "end_s": 7.236,
+          "duration_s": 7.236,
+          "scene_index": 0,
+          "speech": false,
+          "motion": "medium",
+          "energy": "high",
+          "description": "dirt bike, gravel road, muddy track \u2014 moderate motion",
+          "tags": [
+            "dirt bike",
+            "gravel road",
+            "muddy track",
+            "POV riding shot"
+          ],
+          "quality_score": 0.7108402607237805,
+          "signals": {
+            "motion": 0.05438010022044182,
+            "shake": 0.010917766951024532,
+            "luma": 0.37831729066138176,
+            "contrast": 0.22465676700367648,
+            "highlight_clip": 2.9230441214167513e-05,
+            "shadow_clip": 0.02724277414381504,
+            "colorfulness": 0.13990577248965994,
+            "sharpness": 5602.529296875
+          },
+          "embedding": "FKOYmPejNiJXJrQl1x0QKOmhJCkXKnQip52hqUcsgqjCptcSkiqiIcSmWpiFHBEkT6q7lBiodKigqPOpwhx3IWWl26G5pHopfqZZD6ymAyjYJqeoPKrgnwgh3bCnpKImXiq6JIunsS0iJx8pKqw8m5AtfSK/pKEde6wsokElYyIzn3WqbioZJysmziYFKD6qN5/7nZOkmSLtqhSdwxvSqZIoFCw3KLimViqvJ9efLqq+KqmmpyDwqp64Iys1KNIqvx8FppepR663KsykCivuKGAiLSRcr6CmYpz5JOKgtqjxnhkefyh+pbWrix8UHVymTyo7qfmr7pjfqDakCStDH4imlyrPqCQYhaB3LU+h4hSbnNUe0qqKoregeCLpKIGqUqmNJdSZpCiopYSlbyOMp0eiRCeSoP+kqaBKqL8ftKjeoB2oByxTmPupnCX4KBInuKIHKXoQ26UqJC2bcKBnpFkpN6iWp5Il46R1qb2pDqR1pmCpSSbVrZ2hUqi0JawmMKC6oQ2x5akAouuaxSskosYomyluqLApMioEptyioqTsHPGkqaWxr7qksyWJIZOZRyO8JR2MhRtEJnYmoCBTJEwd8hiGpeyZ0ShwI5CblykvIrssrCJZDsaQF6QEp6Gj1aUQmXskjq5wqsWjfJ2IoISizSk5I64eZyMbIRamLahjoC6hMDCCIhClsyXQpHApkSbyIVak8SeRGZeoT6ptGKqnNBTEoIWo2x6upYipRKXPoY8ZvZSUlVMpoplrMSKoSaMVqOAr8iGJJLyikyRSIxurmiYzqDUokiN9pCWjQKj2JHitMaKRHysl3iD9pqsqcy2vqxsmkaA4JmyjfKQjpGMkCijkoeKnpx2DKXekJaiSJ2ipyyIoIBQrLabEoBOp8ihPI7mN6xzVqUqjgRS4oZANRyjWm1IeAKr4JfwkepwiJJ6gGRwJLKsl9q1CJrOk8R/IJHwkdpbkK7uniBkbsR4krCnoIIAnnCEtlW6keo09MJwjBSU/JT0mACVmpfmCPaVLJT0iJiXdoi2stKqbkEKZHiH+qCkSXqWZKLCkzCalJx6kGp/zoFIl0aarphMmJSoXqKKpEyotoOEksKZHKMmm/6kHqkCqRqJoqLsdDa3wqberHKmpJu6sDB+8IMgr/6zQpn0fqh/lqd4iiSHqoYGlnihaK/8cRyG8IhakA6sCohWkH6mcoGejPaxaIgyfRyFipMmj0aYdqggg3xzlF1sdHh0aoekYEKQ/opamRiwaJSOpyCqVpAQoeJwTHiUeRaHsp4KmYihEoXgliR85mnKoMqDjKOwpZB4prL4Ss6D/KGscEKpEpbeoL6MoJrQrdSrqJAUpzKSZp8aW5qQ9KQ=="
+        },
+        {
+          "id": "GX011129_002",
+          "start_s": 7.236,
+          "end_s": 14.472,
+          "duration_s": 7.236,
+          "scene_index": 1,
+          "speech": false,
+          "motion": "medium",
+          "energy": "high",
+          "description": "gravel road, dirt bike, muddy track \u2014 moderate motion",
+          "tags": [
+            "gravel road",
+            "dirt bike",
+            "muddy track",
+            "tracking shot"
+          ],
+          "quality_score": 0.6763273225983721,
+          "signals": {
+            "motion": 0.06243177130818367,
+            "shake": 0.01497416291385889,
+            "luma": 0.36143370983647366,
+            "contrast": 0.21978297514073988,
+            "highlight_clip": 1.4235605704016052e-05,
+            "shadow_clip": 0.029834982007741928,
+            "colorfulness": 0.14944743736117494,
+            "sharpness": 5222.29833984375
+          },
+          "embedding": "B57RDwGjtCJmJ74kpRyRKHefFykUKxIlvRmvqZMr6KgRoWoceymwIeqhkx7cEXsmiqqHGhumtqa4p/KplSGtII6nyqITpsApgadPm9SmaSmhKKCodKm7o0OaGbA6pDUmMypFJWinuiy7Jlcpk6v+HWYtsiMnoOUToKyTHaghoiWuo4OqiypNJHskFCetKA+roqJnoiqk4yEHqrud5B5CqeooCiyMJ9KoPSloJAeeRKvwKYinIx9Jqr64iSoYJ7grwiGypKmpJK6eKgug0CnaKBckMCZnsDKoT54fJs6iZ6knpEUZaSlZoEWrIyCLIVenNSpHqg+swwXOqNqldyogGmajmyrHqKCcOaN+LT+akiCtpCYcJKrYoDugkyBYJi+pS6mVJ6ufkibYpamleSUqpjyeIieeFiKjy5+mp24FNahNoA+otyqkGR2sRiDaJeooeo88Kp4ffqS4Jcuhq6E4ocsq8qg8qQYkWaKgqFGpSqO7pBGqLyhzrfKh4aW2JRgnO58gni2xbqkPpAaf1yqfoH8mZyqyp7woRColpM2mu6ROH4ykRqexrv+iqSYiH9+h4SMbJikeOSEEJj8lZCTUJPabQh+GpvcQ+CgcI26jeCluJHEspR2WHlyfs6djpWOf7qbhIKEkN64mqsemM5x4pOajwyoHJLEhCiDtIA+nnKeRorugDzBdJWCehidbpgoq2iZxIXCgYSc1Hnmowap8Hm+oGBsFoMSoohwmp0qpc6fOo0Cc4p7XHPopU5spMVCmIp9DpDAssCL2Izii9SB5JYapYyaxp4wnwyFyppujrqgmJU+tHKOiIzQklCIkqJAqei2Zq9ElzaDWKGallKLjpwYkKivvnzWopR8wKbikYKjMJZeo+iJuHegpS6RincSoYCkvI3GXwB5uqiuiYKEKoB+SRCY8GQcbyKdmIEUlxhVGIxWQLh0eK40khq4OJi6ksQA0JVklDSELLCOoMZ7qsPgkrykSIPImwR9Nlkql9KG5L1si2iJoJl4mLCZ4pWEdU6TcJmki1SUqop6tJ6sRlVqd9CH6qPGQKqdLKVWmMSidJc6jv5zEFgUkAqZbp0AnDimQp+KoDyr8ni8lS6ZgKCCkL6qRqpaplqJDp2gkGawBqaKq2aiLJqCtPxsmH/grEq2uqJMimyMbqnsiNSNEpBilESi0KgYYkiIIIbGhiam1oMuhAKnMn92cDq2HIN+g1iEioWei0KdWqpKZPCDbEOghKpjHoQcWKaDOogSmNSxjJNKmqyrVptIoKRRJgMQXnKS1pj6oNiiAnCwlf4NfmRyowJvmKC4poyI9rGWWqpsXKZaeCKpgonWoe6MzJhgshSqMIssogqMgpjQicaWUKA=="
+        },
+        {
+          "id": "GX011129_003",
+          "start_s": 14.472,
+          "end_s": 21.708,
+          "duration_s": 7.236,
+          "scene_index": 2,
+          "speech": false,
+          "motion": "medium",
+          "energy": "high",
+          "description": "dirt bike, muddy track, gravel road \u2014 moderate motion",
+          "tags": [
+            "dirt bike",
+            "muddy track",
+            "gravel road",
+            "POV riding shot"
+          ],
+          "quality_score": 0.6932319520742749,
+          "signals": {
+            "motion": 0.06068279594182968,
+            "shake": 0.012863931246101856,
+            "luma": 0.36452989765242033,
+            "contrast": 0.21958882948931527,
+            "highlight_clip": 9.964924174710177e-06,
+            "shadow_clip": 0.02981078252196312,
+            "colorfulness": 0.15803909301757812,
+            "sharpness": 5540.95556640625
+          },
+          "embedding": "TqACoOOf1h+OJZMirAe2KDud5yiyKogk1hleqJ4rgqempwyXZinNIVekfqE/HnAm1KqWFWCm96WQpqqpPCBNIamnYpyHpggqB6UtjlCkdyb4Jgup4KkIot+XFrAfChwmjio5Jh2nGC20J3YpHao8oSQtBCSEpGQZsqxwnAYkEyQGpESpgSlJKJckUSerJjWrGZ+Io56hSyW5qYCdg5XuqB4n2SsgKCepqCmXJd0g2KoAK7KmuyAiqra44CuJKFArSCUjpE+qta3UK9qkIiqEKasiASYNsDyo2aHcJXWiraesoMEVSCl/oF+rUh6BGtynWipsqg+s2hCpqAegjiqbHCOmlSpVqXIakqBmLSeZpR7aokeUmqvQpOiRdySVKdio9akMJ2afvCh4pwKkKiRxp9WhqCaBneyllZ+SpmWdY6iXn4umNSyoHGurcSQmJgQogaACKP8gB6VdJOqfTqNuoSUoJ6l3qPMlMKQYqKOo5J86pEKpQijirQahRaYXKG8mYg0fmQaxDKpLpVahqCvfoX0ouCnwqM4oECqrpYCkcqG+oL6hdaQZr1SlUiSuInacmCJOJdwdmB0jJUwmbSR8JN6YCRxcqBkULCjAGWGi/ChIJvYrNx2QnOKfEKf9o/yiAqeXHrEkqa7sqZSkd6C4pqecUilcH2EXsR6fG26n76eqolOYYS/bJBGi7iWTpZghvSfDJEefHihzEWCmXKoGINWlDpnfoEGoypy5pn6px6WaoaWZR5kXIesphaCkMRmoXqByphosmiNgJMygYx41Iz+rISQ1qNknyCL7pE2k5afxIzWuWaI2Jf8i8hkqqF8qYi3iq5snD6SuJ9Kn06Tooy0h2ihfnBeoPhyqKIild6eoJQuqqSC0DF0pWaTOo5Oo8Cj7H/adDiFiqg+jLqAdoRecjiYonoYXbajYJcMlAJ6XI1KgoRCxLBEgmK6KJEebwyErJiMhHBhxLKGnqZissDYbPSu5IDgnGR4Xn+imeaP4L2Em7CQEJMgkZSjpprcYRKTOJyUk6CUvpTqvEqr0IRmeHyORqNId/aaTKcekySYlJ4qkPxsxnEgnuKO2pUQnACoFp2CrPipWnEklH6abKBSnOqrSqW2p0KEUpT4egqykqQGr3KknKAKupSEbHB0qcq25p28idiHeqaAiaB64miOkRSoAKxQggCE6JL2l96qoouqea6byoukEaKz2IhidsxSrom2k5aT/qUUZKRx3DIkkyJ85mbcd2qBGpKCmHiyQJZumFCoBpaQoEaKlHdsR7aN3qBKnUSYXoUAjYx4Log2oS6HzKD4phh/Iqk+gUKODKdyczanZoUapJaI8Jm4rvys3IFApNabyp5Ia4KG/KQ=="
+        },
+        {
+          "id": "GX011129_004",
+          "start_s": 21.708,
+          "end_s": 28.944,
+          "duration_s": 7.236,
+          "scene_index": 3,
+          "speech": false,
+          "motion": "medium",
+          "energy": "high",
+          "description": "dirt bike, muddy track, gravel road \u2014 moderate motion",
+          "tags": [
+            "dirt bike",
+            "muddy track",
+            "gravel road",
+            "tracking shot"
+          ],
+          "quality_score": 0.6845831584595726,
+          "signals": {
+            "motion": 0.05966675654053688,
+            "shake": 0.013689501211047173,
+            "luma": 0.35328734154794733,
+            "contrast": 0.21943178363874846,
+            "highlight_clip": 2.1353405827539973e-05,
+            "shadow_clip": 0.032354686409235,
+            "colorfulness": 0.15187047322591146,
+            "sharpness": 5643.7158203125
+          },
+          "embedding": "eKPMm3ukEiJMI32XNZ7MJpUbAiiWKuoiRAszpxssf6R0pUccASlFlZKlG6cMlsUkvapVoKWo6qgipy6pGB8sJVWkfKKTp2soZaXwGCGlTxrrJEyqTKheE9khjLCvHfEltCocJIWnIy32KKIpPaoApVksQSLrpeAfaqwQkbUmUSMipZyqPSdIKOch/iK1I2+pj5wlpZGenyYZqgUaQhlOqa0lRixpKKKoRSmBKScRXau4K6+kp5sTqo+4VSpIKs8qWiQQo0Wp8qwQK/GjMCriKpEBZSTQrh+lDZluJZAh5ahWoKQhaSUgpOiqYpHBHEGpCyhKqJmrDx8hqdSaNiyNjtmnCyoCqKmQ86BzLX0kGR1iHzsjT6zZoqCeICBvKWmpnKu4IxqQxykoqU2koiGdpcKdPCgPob+nmaLApXCgH6ZAG7emtSkyojWq4iQSJHEpD6HHKHogXKV1I3KcYqG5pGQnR6oeqaIlUqErqPOo16JhpbumqCVKriyfgah3KFcmAyKJoU+xtKkipBgjjSyIoUMpYihzqpMnKipmpw+lFaB0nT+jSKSMsKqn/pQDI6seZCCeJqAfKRuBIEMl3yR1HN0aGSKUoqMaNSW2nTyb9ChmIhYspSP1F1qdpabOpEKlrKV2GIUhTa80qfiIwhc8nfmbYyZHIiOSdyGRFyulnKgMne6XnDA6IFmluCTVon0dWSVzH+qkeyhmmW+kz6r1FqGcFJwcGkqngR5yoRCqsaR9nkWRnBQGIJcoR5oAMnSpkqHppxksGR9iJzCdxCFqJASqFybFqropeyBEphelnKdvIrOuOKEoJKwn5iOVqBkrby02rNooBJ6OI1ykhaeXH80hpCcGpiWoTR5/KEKmjameKRmqFST4oAIrTqjwpQKoiShpJUqhoySoq9ehaKCzpCmUOygznS0My6glKS0mbaTSIfajiQ/gLKKZ3a0vImildpjcIqAasRxgLDClJh6TsEMUdSo7GTclrCRmknKnU5tMMPomPyQrIWAlwCm3pUMhbaX5HoQktyXho7evK6oeJOyhwh6qqdqYrKccKcml6yYPKWKmZyItHPYmt6ZromgnvylFqBSrMSppo5shQKdgKWKoe6rUqI6qpp9Jow4YJ6zfqJGrIaliKKeqPyAgIP8oWK3UpiEk3hiVqrkj9B+gnNCi7SnuK50gUyQXJiip+qpypr2esqcRpaygMayRJECfEoTxpC+gPabHqcabVBB8lSKD/J04oCKjzqPjoySlbCu3KCmkDiuuoxEo9KCwIHIkJaekqEabkyUmoFEl3ySHpKCnFqLjJtIojxPMqk2hPaFuKUEcOakjpvSpqKUdJYorxiogIHQozKRtqAmkq53sKQ=="
+        },
+        {
+          "id": "GX011129_005",
+          "start_s": 28.944,
+          "end_s": 36.18,
+          "duration_s": 7.236,
+          "scene_index": 4,
+          "speech": false,
+          "motion": "medium",
+          "energy": "high",
+          "description": "dirt bike, gravel road, muddy track \u2014 moderate motion",
+          "tags": [
+            "dirt bike",
+            "gravel road",
+            "muddy track",
+            "POV riding shot"
+          ],
+          "quality_score": 0.7116572278230888,
+          "signals": {
+            "motion": 0.04982534795999527,
+            "shake": 0.010785220190882683,
+            "luma": 0.3882318534103094,
+            "contrast": 0.2308668996773514,
+            "highlight_clip": 2.657312961673597e-06,
+            "shadow_clip": 0.027573605999350548,
+            "colorfulness": 0.17690836588541667,
+            "sharpness": 5571.15185546875
+          },
+          "embedding": "86ETlU+hFiTzHQIhyh0XJ2adDSkIKrckzRxJqG8tvqP5ooicdCrWFiCcVaDDISslaKoqoRan5KbcpQCqAiF1JQ+lZ6AnqDYnA6OtHTud2SZxJkioq6l7o1KT1rBUoQwkNCp/JBSmkC0OKLInT6o/o/Ut+CRDow8eYq32Fngk1iV2pPOp/yn9JjYhLCjZJReqJprZpC6e2iYVqWmaXZaIqEkoVCx1Ji6mKCkyKUkhlaoWLEultBkpqpm4Uyz8KAkpfiK5prOpE64pKl2kYCrjKWcfmST1rdakvZlYIu8byKgbo5eX+ieXpH2rIyBaH1Wo5ilBqr6sEiATqUKitivlHhSmIipGqdqaWaBdLZsasZzHEcgihKtWoI8auR5zKiircqq8IaycLSpGqf+jliKupxSk7ylqoVanr6EfqfQejqaIIu2mBivjoYOqGCSIJ7UnMaLuJwUhUaV5I1EMHJ3EodcpGalYp5kn450BqcioVKBMpzaohCS7rbyk56bHJtQn5iIapS6xAKrvom+Ziis6otQpsCmQqNMnoSrApDClD6YlmJmmRKVKsCumNyWgJfIabyZSJc0lJSAbJY8n1yQ3JJgiMCQVpfcasCURHCeisSmSJnMsaSGiJM0RTKaioWOle6ZnIBckT66IqFMcl6SfnXoWsSnWJf8dpyLvkrej+KfLoIOa3S9AJGGkjyVboiYnpSiDIwqmgiZ5lLCmN6qTGAinqRiOGRKmZ5x9p9CppKHLnKQeCByTH+0q+JgUMj6ouaDGpyEsAyLkJXWa1CXpIq2qLSXWqeEokiTppRKko6j3IvisnKFvInomux3DqWMrWS1uqwgor6TIJDOf46cIgj4YuimTnVenbxqDJyuowamlJ0mpeBzUl0Mp4qY6pfaoPikRICsZYCPxqTOj9pheoiaegiaLoZwdWalxJS4lt6SPHyakkImqLAscxq0NJ7ajvSL3I2MjciA6LGioESBTsEobySlUIecjByGYkL+l1Z+wL24ngh55IiklaClypUoh2ae6IrYj9yUKpNyvjan3FJaPzyP+qBeT7KRBKWemtiUGJ4unHiT9HQso5qLEpRYlVymJqMaqyyufoDYlRqRWKC6pkKrWpxuqMKShpFocPKxOqTurS6n0JZGrtRomkoUqPa4ApvAktiOmquMlvyOnnpGijykAK6WebSI0JOqlUqrooeedYKf3pbWjE6vaIiEZ2RzLo1Ol76RqqVGNBB2MpCUe2ZuQoP8ccqRHpj6k1yy/J0OmdyuronYn0aM3ILogBqcpp9Cl3ibEorMjrSU4osOlbp6mKLkpFCN1qsGiZqDhKTKeAKqcpUapS6IlJrIp8ikyJv8p+6W7pvakIaBEKQ=="
+        }
+      ]
+    }
+  ]
+}
