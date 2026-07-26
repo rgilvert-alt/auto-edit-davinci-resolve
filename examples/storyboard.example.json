@@ -1,10 +1,15 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "title": "Mountain Ride",
   "target_duration_s": 60,
   "timeline_fps": null,
   "style": "Adventure documentary",
   "analysis_warnings": [],
+  "revision": 1,
+  "music_path": null,
+  "catalogue_path": null,
+  "last_timeline_name": null,
+  "last_plan_path": null,
   "slots": [
     {
       "id": "s1",
@@ -19,7 +24,9 @@
       "exclude": {
         "has_speech": true
       },
-      "fill": null
+      "fill": null,
+      "locked": false,
+      "candidates": []
     },
     {
       "id": "s2",
@@ -31,7 +38,9 @@
         "motion": "medium"
       },
       "exclude": {},
-      "fill": null
+      "fill": null,
+      "locked": false,
+      "candidates": []
     },
     {
       "id": "s3",
@@ -45,6 +54,20 @@
       "exclude": {
         "has_speech": true
       },
+      "locked": true,
+      "candidates": [
+        {
+          "media_path": "/Volumes/TRIP/alt.MP4",
+          "start_s": 2.0,
+          "duration_s": 8.0,
+          "score": 0.79,
+          "reason": "runner-up CLIP match",
+          "descriptor": "wide mountain ridge — moderate motion",
+          "tags": ["mountain", "ridge"],
+          "score_parts": {"clip": 0.12},
+          "segment_id": "alt_002"
+        }
+      ],
       "fill": {
         "media_path": "/Volumes/TRIP/GX011129.MP4",
         "start_s": 14.2,
@@ -58,7 +81,8 @@
           "quality": 0.18,
           "chronology": 0.20,
           "steady": 0.05
-        }
+        },
+        "segment_id": "gx_014"
       }
     }
   ]

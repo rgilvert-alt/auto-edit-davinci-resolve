@@ -146,6 +146,16 @@ class ResolveClient:
             n += 1
         return f"{preferred} {n}"
 
+    def set_current_timeline(self, name: str) -> bool:
+        """Select a timeline by name if it exists. Returns True on success."""
+        project = self.current_project()
+        for i in range(1, int(project.GetTimelineCount() or 0) + 1):
+            tl = project.GetTimelineByIndex(i)
+            if tl is not None and tl.GetName() == name:
+                project.SetCurrentTimeline(tl)
+                return True
+        return False
+
     def create_timeline(self, name: str) -> Any:
         """Create an empty timeline (unique name if needed) and make it current."""
         mp = self.media_pool()

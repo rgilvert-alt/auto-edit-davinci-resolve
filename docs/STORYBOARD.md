@@ -38,7 +38,7 @@ analyze_catalogue(clips)          # ffmpeg frames → signals → CLIP tags
 
 Warnings (missing CLIP, sampling failures) are stored on `MediaCatalogue.warnings` / `Storyboard.analysis_warnings` and shown in the UI — they are never swallowed silently.
 
-## Slot fill (seconds) — schema v2
+## Slot fill (seconds) — schema v3
 
 ```json
 "fill": {
@@ -54,15 +54,25 @@ Warnings (missing CLIP, sampling failures) are stored on `MediaCatalogue.warning
     "quality": 0.18,
     "chronology": 0.20,
     "steady": 0.05
-  }
+  },
+  "segment_id": "gx_014"
 }
 ```
 
-Scarcity: if no exact visual exists, the filler picks the closest available segment and explains the approximation in `reason`.
+Slots also carry editor state:
+
+- `locked` — regenerate unlocked leaves this fill alone
+- `candidates` — ranked alternates for Swap in the UI
+
+Storyboard metadata: `revision`, `catalogue_path`, `music_path`, `last_timeline_name`, `last_plan_path`.
+
+When music is attached, Story mode snaps cut points toward nearby beats (`snap_fills_to_beats`) after fill. Beat times come from librosa when installed, otherwise an ffmpeg + numpy onset/tempo fallback (no PyTorch/llvmlite required).
+
+Scarcity: if no exact visual exists, the filler picks the closest available segment and explains the approximation in `reason`. Near-duplicate embeddings and overused files are penalized.
 
 ## Evidence surfaces
 
-- **AutoEdit UI**: FIRST CUT shot list with thumbnail, in/out, descriptor, score, reason, tags.
+- **AutoEdit UI**: FIRST CUT shot list with thumbnail, in/out, descriptor, score, reason, tags, coverage, plus Lock / Swap / Trim / Reorder / Delete. Mode-aware controls (Story / Assemble / Montage). **Revise unlocked** regenerates only unlocked shots.
 - **Resolve markers**: one marker per shot (name = descriptor, note = reason + score parts). Marker frames are shifted by the timeline origin, same as clip `recordFrame`.
 - **CLI**: `autoedit analyze --clip … --report analysis.txt`
 
