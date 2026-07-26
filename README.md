@@ -105,6 +105,10 @@ Analysis cache lives in `.autoedit/cache/` (gitignored).
 - `src/autoedit/ui/` — Flet desktop app
 - `src/autoedit/cli.py` / `mcp_server.py`
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Unit tests run in CI without Resolve or ffmpeg.
+
 ## License
 
-TBD.
+[MIT](LICENSE)

@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Auto-edit engine for DaVinci Resolve Studio: silence removal, transcript editing, scene assembly, music montage."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "TBD" }
+license = { text = "MIT" }
 dependencies = [
     "typer>=0.12",
     "python-dotenv>=1.0",

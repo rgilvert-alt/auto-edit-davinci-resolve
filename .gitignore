@@ -9,6 +9,9 @@ build/
 .env
 .DS_Store
 *.plan.json
+# Local analysis / storyboard runs (keep samples under examples/)
+/*.catalogue.json
+/*.storyboard.json
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
