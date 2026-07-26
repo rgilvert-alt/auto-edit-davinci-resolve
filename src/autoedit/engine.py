@@ -244,11 +244,13 @@ def build_story_plan(
     save_storyboard_path: str | Path | None = None,
     save_catalogue_path: str | Path | None = None,
     on_progress: Callable[[int, int, str], None] | None = None,
+    snap_to_beats: bool = True,
 ) -> EditPlan:
     """Autonomous first cut: catalogue → storyboard → fill → EditPlan."""
     from .analysis import analyze_catalogue
     from .storyboard import (
         fill_storyboard,
+        snap_fills_to_beats,
         story_to_storyboard,
         storyboard_to_edit_plan,
     )
@@ -263,8 +265,12 @@ def build_story_plan(
         detect_speech=False,
         on_progress=on_progress,
     )
-    if save_catalogue_path:
-        catalogue.save(save_catalogue_path)
+
+    stem = timeline_name.replace(" ", "_")
+    cat_path = Path(save_catalogue_path) if save_catalogue_path else Path(
+        f"{stem}.catalogue.json"
+    )
+    catalogue.save(cat_path)
 
     board = story_to_storyboard(
         story,
@@ -273,18 +279,123 @@ def build_story_plan(
         timeline_fps=None,  # resolve only at EditPlan boundary
         title=timeline_name,
     )
+    board.catalogue_path = str(cat_path)
+    board.music_path = music_path
+    board.revision = 1
     board = fill_storyboard(board, catalogue)
+
+    if music_path and snap_to_beats:
+        try:
+            from .analyzers.beats import detect_beats
+
+            grid = detect_beats(music_path)
+            board = snap_fills_to_beats(board, grid.beats)
+        except Exception as exc:
+            board.analysis_warnings.append(f"Beat snap skipped: {exc}")
 
     first_fps = catalogue.clips[0].source_fps if catalogue.clips else 0.0
     tl_fps = resolve_timeline_fps(timeline_fps, first_fps)
-    if save_storyboard_path:
-        board.timeline_fps = tl_fps
-        board.save(save_storyboard_path)
+    board.timeline_fps = tl_fps
 
-    return storyboard_to_edit_plan(
+    sb_path = Path(save_storyboard_path) if save_storyboard_path else Path(
+        f"{stem}.storyboard.json"
+    )
+    board.save(sb_path)
+
+    plan = storyboard_to_edit_plan(
         board,
         catalogue,
         timeline_name=timeline_name,
         timeline_fps=tl_fps,
         music_path=music_path,
+    )
+    plan_path = Path(f"{stem}.plan.json")
+    plan.save(plan_path)
+    board.last_plan_path = str(plan_path)
+    board.save(sb_path)
+    return plan
+
+
+def rebuild_story_plan(
+    storyboard_path: str | Path,
+    *,
+    timeline_name: str | None = None,
+    timeline_fps: float | None = None,
+    music_path: str | None = None,
+    snap_to_beats: bool = False,
+) -> EditPlan:
+    """Re-convert a (possibly editor-edited) storyboard into an EditPlan."""
+    from .analysis.catalogue import MediaCatalogue
+    from .storyboard import Storyboard, snap_fills_to_beats, storyboard_to_edit_plan
+
+    board = Storyboard.load(storyboard_path)
+    if not board.catalogue_path:
+        raise ValueError("Storyboard has no catalogue_path; create a first cut first")
+    catalogue = MediaCatalogue.load(board.catalogue_path)
+    music = music_path if music_path is not None else board.music_path
+
+    if music and snap_to_beats:
+        try:
+            from .analyzers.beats import detect_beats
+
+            grid = detect_beats(music)
+            board = snap_fills_to_beats(board, grid.beats)
+        except Exception as exc:
+            board.analysis_warnings.append(f"Beat snap skipped: {exc}")
+
+    first_fps = catalogue.clips[0].source_fps if catalogue.clips else 0.0
+    tl_fps = resolve_timeline_fps(
+        timeline_fps if timeline_fps is not None else board.timeline_fps,
+        first_fps,
+    )
+    name = timeline_name or board.title or "First Cut"
+    board.timeline_fps = tl_fps
+    board.music_path = music
+    plan = storyboard_to_edit_plan(
+        board,
+        catalogue,
+        timeline_name=name,
+        timeline_fps=tl_fps,
+        music_path=music,
+    )
+    stem = name.replace(" ", "_")
+    plan_path = Path(f"{stem}.plan.json")
+    plan.save(plan_path)
+    board.last_plan_path = str(plan_path)
+    board.save(storyboard_path)
+    return plan
+
+
+def revise_story_plan(
+    storyboard_path: str | Path,
+    *,
+    timeline_name: str | None = None,
+    timeline_fps: float | None = None,
+    snap_to_beats: bool = True,
+) -> EditPlan:
+    """Regenerate unlocked shots and rebuild the EditPlan (locked shots kept)."""
+    from .analysis.catalogue import MediaCatalogue
+    from .storyboard import Storyboard, regenerate_unlocked, snap_fills_to_beats
+
+    board = Storyboard.load(storyboard_path)
+    if not board.catalogue_path:
+        raise ValueError("Storyboard has no catalogue_path; create a first cut first")
+    catalogue = MediaCatalogue.load(board.catalogue_path)
+    board = regenerate_unlocked(board, catalogue)
+
+    if board.music_path and snap_to_beats:
+        try:
+            from .analyzers.beats import detect_beats
+
+            grid = detect_beats(board.music_path)
+            board = snap_fills_to_beats(board, grid.beats)
+        except Exception as exc:
+            board.analysis_warnings.append(f"Beat snap skipped: {exc}")
+
+    board.save(storyboard_path)
+    return rebuild_story_plan(
+        storyboard_path,
+        timeline_name=timeline_name,
+        timeline_fps=timeline_fps,
+        snap_to_beats=False,
     )

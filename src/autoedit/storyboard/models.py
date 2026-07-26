@@ -56,6 +56,8 @@ class SlotFill:
     descriptor: str | None = None
     tags: list[str] = field(default_factory=list)
     score_parts: dict[str, float] = field(default_factory=dict)
+    # Segment id from MediaCatalogue when known (helps regenerate / anti-dupe).
+    segment_id: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -73,6 +75,7 @@ class SlotFill:
             score_parts={
                 k: float(v) for k, v in (data.get("score_parts") or {}).items()
             },
+            segment_id=data.get("segment_id"),
         )
 
 
@@ -85,6 +88,8 @@ class StorySlot:
     prefer: SlotPrefer = field(default_factory=SlotPrefer)
     exclude: SlotExclude = field(default_factory=SlotExclude)
     fill: SlotFill | None = None
+    locked: bool = False
+    candidates: list[SlotFill] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -95,6 +100,8 @@ class StorySlot:
             "prefer": self.prefer.to_dict(),
             "exclude": self.exclude.to_dict(),
             "fill": self.fill.to_dict() if self.fill else None,
+            "locked": self.locked,
+            "candidates": [c.to_dict() for c in self.candidates],
         }
 
     @classmethod
@@ -108,6 +115,10 @@ class StorySlot:
             prefer=SlotPrefer.from_dict(data.get("prefer")),
             exclude=SlotExclude.from_dict(data.get("exclude")),
             fill=SlotFill.from_dict(fill_raw) if fill_raw else None,
+            locked=bool(data.get("locked", False)),
+            candidates=[
+                SlotFill.from_dict(c) for c in (data.get("candidates") or [])
+            ],
         )
 
 
@@ -120,8 +131,13 @@ class Storyboard:
     slots: list[StorySlot] = field(default_factory=list)
     timeline_fps: float | None = None
     style: str | None = None
-    schema_version: int = 2
+    schema_version: int = 3
     analysis_warnings: list[str] = field(default_factory=list)
+    revision: int = 1
+    music_path: str | None = None
+    catalogue_path: str | None = None
+    last_timeline_name: str | None = None
+    last_plan_path: str | None = None
 
     @property
     def filled_count(self) -> int:
@@ -141,6 +157,11 @@ class Storyboard:
             "timeline_fps": self.timeline_fps,
             "style": self.style,
             "analysis_warnings": list(self.analysis_warnings),
+            "revision": self.revision,
+            "music_path": self.music_path,
+            "catalogue_path": self.catalogue_path,
+            "last_timeline_name": self.last_timeline_name,
+            "last_plan_path": self.last_plan_path,
             "slots": [s.to_dict() for s in self.slots],
         }
 
@@ -160,8 +181,13 @@ class Storyboard:
             slots=[StorySlot.from_dict(s) for s in data.get("slots", [])],
             timeline_fps=data.get("timeline_fps"),
             style=data.get("style"),
-            schema_version=int(data.get("schema_version", 2)),
+            schema_version=int(data.get("schema_version", 3)),
             analysis_warnings=list(data.get("analysis_warnings") or []),
+            revision=int(data.get("revision") or 1),
+            music_path=data.get("music_path"),
+            catalogue_path=data.get("catalogue_path"),
+            last_timeline_name=data.get("last_timeline_name"),
+            last_plan_path=data.get("last_plan_path"),
         )
 
     @classmethod

@@ -1,6 +1,7 @@
 """Unit tests for visual metrics and descriptors (no ffmpeg/CLIP)."""
 
 import numpy as np
+import pytest
 
 from autoedit.analyzers.frames import FrameSample
 from autoedit.analyzers.visual import (
@@ -117,3 +118,27 @@ def test_score_candidate_returns_parts():
     assert result.score > 0
     assert "quality" in result.parts
     assert result.reason
+
+
+def test_detect_scenes_falls_back_without_scenedetect(monkeypatch):
+    """Assemble/Scenes must work when PySceneDetect is not installed."""
+    import builtins
+
+    from autoedit.analyzers import frames as frames_mod
+    from autoedit.analyzers import scenes
+
+    sample = _sample(12, 12.0)
+    real_import = builtins.__import__
+
+    def _block_scenedetect(name, *args, **kwargs):
+        if name == "scenedetect" or name.startswith("scenedetect."):
+            raise ImportError("blocked for test")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _block_scenedetect)
+    monkeypatch.setattr(frames_mod, "sample_frames", lambda path, **kw: sample)
+
+    shots = scenes.detect_scenes("/tmp/clip.mov")
+    assert len(shots) >= 1
+    assert shots[0].start == pytest.approx(0.0)
+    assert shots[-1].end == pytest.approx(12.0)
