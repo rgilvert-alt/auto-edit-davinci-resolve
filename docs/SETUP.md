@@ -1,6 +1,6 @@
 # Setup (macOS + DaVinci Resolve Studio)
 
-Do this on the **iMac Pro** before running the engine or MCP tools.
+Required before **Apply to Resolve** (CLI, UI, or MCP). Preview / plan generation works without Resolve.
 
 ## 1. Enable Resolve scripting
 
@@ -11,15 +11,15 @@ Do this on the **iMac Pro** before running the engine or MCP tools.
 
 ## 2. Environment variables
 
-Typical Studio install paths on macOS:
+Typical Studio paths on macOS (confirm they exist for your version):
 
 ```bash
 export RESOLVE_SCRIPT_API="/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting"
-export RESOLVE_SCRIPT_LIB="/Library/Application Support/Blackmagic Design/DaVinci Resolve/DaVinci Resolve.app/Contents/Libraries/Fusion/fusionscript.so"
+export RESOLVE_SCRIPT_LIB="/Applications/DaVinci Resolve/DaVinci Resolve.app/Contents/Libraries/Fusion/fusionscript.so"
 export PYTHONPATH="$PYTHONPATH:$RESOLVE_SCRIPT_API/Modules/"
 ```
 
-Add these to `~/.zshrc` (or a project `.env` loaded by the CLI/MCP). Confirm paths exist on your Resolve version; adjust if Blackmagic moved them.
+Copy [`.env.example`](../.env.example) to `.env` for the CLI/UI, or add the exports to `~/.zshrc`.
 
 Smoke test (Resolve must be running):
 
@@ -31,26 +31,34 @@ You should see a product name, not `NOT CONNECTED`.
 
 ## 3. System deps
 
-- Python **3.10–3.12** (preferred for Resolve scripting compatibility)
+- Python **3.10–3.12** preferred (Resolve scripting compatibility; 3.13 is OK for core UI)
 - `ffmpeg` on PATH (`brew install ffmpeg`)
 
 ## 4. Project Python deps
 
-After scaffolding on the iMac:
-
 ```bash
-cd "/path/to/Auto Edit Davinci Resolve"
+cd /path/to/auto-edit-davinci-resolve
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt   # or: pip install -e .
+pip install -e ".[dev,ui]"
+pip install -e ".[analyzers,mcp]"   # optional heavy backends
+cp .env.example .env
 ```
 
-## 5. Resolve MCP (samuelgursky)
+Launch UI: `autoedit-ui`.
 
-Install per upstream README: [samuelgursky/davinci-resolve-mcp](https://github.com/samuelgursky/davinci-resolve-mcp).
+## 5. Optional MCP servers
 
-Register the server in Cursor MCP settings so the agent can drive Resolve for granular ops. Our auto-edit engine will also call `DaVinciResolveScript` directly for batch EditPlan applies.
+- Granular Resolve control: [samuelgursky/davinci-resolve-mcp](https://github.com/samuelgursky/davinci-resolve-mcp)
+- This engine’s tools: `autoedit-mcp` (FastMCP) — `analyze_*`, `plan_*`, `preview_plan`, `apply_plan`
 
-## 6. Optional: Cursor MCP for this engine
+Register both in Cursor MCP settings if you want agent-driven editing.
 
-Once `src/autoedit/mcp_server.py` exists, add a second MCP entry pointing at that FastMCP process (documented in README after implementation).
+## Troubleshooting
+
+| Symptom | Check |
+|---------|--------|
+| Apply fails / NOT CONNECTED | Studio running; scripting = Local; env paths exist |
+| No beat snap / orange warning | ffmpeg on PATH (numpy fallback); librosa optional |
+| Assemble Scenes fails on missing PySceneDetect | Update to current code (ffmpeg shot fallback) or `pip install 'autoedit[analyzers]'` |
+| CLIP tags missing | `onnxruntime` + `tokenizers` via `[analyzers]`; analysis still runs without them |

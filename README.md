@@ -1,21 +1,21 @@
 # Auto Edit — DaVinci Resolve
 
-Standalone + CLI auto-edit engine for **DaVinci Resolve Studio**. Primary product flow: paste a **Story**, analyze adventure/travel footage, generate an autonomous **first cut**, then apply through the single Resolve path.
+Auto-edit engine for **DaVinci Resolve Studio**. Paste a **Story**, analyze adventure/travel footage, refine a documented **first cut**, then apply through the single Resolve path.
 
 ```text
 MediaCatalogue → Storyboard → EditPlan → applier.py → Resolve
 ```
 
-AI/planning never mutates timelines directly. Surfaces: **desktop UI** (`autoedit-ui`), Typer CLI, optional FastMCP.
+Planning never mutates timelines directly. Surfaces: **desktop UI** (`autoedit-ui`), Typer CLI, optional FastMCP.
 
 ## Modes
 
 | Mode | Purpose |
 |------|---------|
-| **Story** | Autonomous first cut from story/brief + clips |
+| **Story** | First cut from story/brief + clips (visual analysis + CLIP tags when available) |
 | **Assemble** | Per-clip Scenes / Remove Silence / Keep Full Clips, then stitch |
 | **Montage** | Beat-sync clips to required music |
-| silence / transcript / scenes | Single-clip CLI utilities |
+| silence / transcript / scenes / analyze | Single-clip or catalogue CLI utilities |
 
 Adventure footage often has little speech — Story treats text as **editorial intent**, not dialogue to match word-for-word. See [docs/STORYBOARD.md](docs/STORYBOARD.md).
 
@@ -29,15 +29,20 @@ Storyboard fills stay in **seconds**; frames appear only at EditPlan conversion.
 
 ## Install
 
-Python 3.10+, `ffmpeg` on PATH (`brew install ffmpeg`). Resolve scripting: [docs/SETUP.md](docs/SETUP.md).
+- Python **3.10–3.12** preferred (3.13 works for core UI/Story; heavy extras like `librosa` may fail to build)
+- `ffmpeg` on PATH (`brew install ffmpeg`)
+- Resolve scripting: [docs/SETUP.md](docs/SETUP.md)
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
-pip install -e '.[analyzers,ui,mcp]'   # scenes/beats + desktop UI + MCP
+pip install -e ".[dev,ui]"
+# Optional: Whisper, PySceneDetect, librosa, ONNX CLIP
+pip install -e ".[analyzers,mcp]"
 cp .env.example .env
 ```
+
+Core Story analysis needs **ffmpeg + numpy** (always). ONNX CLIP and librosa are optional: without CLIP you still get visual signals/descriptors; without librosa, beat snap uses an ffmpeg + numpy fallback.
 
 ## Desktop UI
 
@@ -45,11 +50,15 @@ cp .env.example .env
 autoedit-ui
 ```
 
-1. Add / reorder clips (optional music)
-2. Paste Story text
-3. Mode: Story (default), Assemble, or Montage
-4. **Create First Cut** → writes `.plan.json` (+ `.storyboard.json` for Story)
-5. **Apply to Resolve** (Studio running, Local scripting)
+1. Add / reorder clips (optional music) via native file pickers
+2. Paste Story text (Story mode)
+3. Mode: Story (default), Assemble, or Montage — controls are mode-aware
+4. Set **Sequence length** (Story) and Style as needed
+5. **Create First Cut** → `.plan.json` (+ `.storyboard.json` / `.catalogue.json` for Story)
+6. Refine shots: **Lock / Swap / Trim / Reorder / Delete**; **Revise unlocked** to regenerate the rest
+7. **Apply to Resolve** (Studio running, Local scripting)
+
+FIRST CUT shows thumbnails, descriptors, scores, reasons, tags, and source coverage. With music, Story snaps cut points toward beats when detection succeeds.
 
 ## CLI
 
@@ -61,6 +70,9 @@ autoedit story \
   --duration 60 \
   --out-timeline "Mountain Day" \
   --preview
+
+# Catalogue + human-readable report
+autoedit analyze --clip A.mp4 --clip B.mp4 --report analysis.txt
 
 # Assemble (scenes per clip, then stitch)
 autoedit assemble \
@@ -83,9 +95,11 @@ autoedit apply "Mountain Day.plan.json"
 
 `--timeline-fps` pins the timeline clock; otherwise Resolve project fps (if connected) or source fps.
 
+Assemble **Scenes** prefers PySceneDetect when installed; otherwise uses the same ffmpeg histogram shot detector as Story analysis.
+
 ## MCP
 
-Tools: `analyze_media`, `plan_story`, `plan_assemble`, `plan_montage`, `plan_silence`, `plan_transcript`, `plan_scenes`, `preview_plan`, `apply_plan`.
+Tools: `analyze_media`, `analyze_catalogue`, `plan_story`, `plan_assemble`, `plan_montage`, `plan_silence`, `plan_transcript`, `plan_scenes`, `preview_plan`, `apply_plan`.
 
 ## Tests
 
@@ -93,21 +107,22 @@ Tools: `analyze_media`, `plan_story`, `plan_assemble`, `plan_montage`, `plan_sil
 pytest
 ```
 
-Analysis cache lives in `.autoedit/cache/` (gitignored).
+CI runs unit tests on Python 3.10 and 3.12 without Resolve. Analysis cache lives in `.autoedit/cache/` (gitignored). Generated run files at the repo root (`*.plan.json`, `*.storyboard.json`, `*.catalogue.json`) are gitignored; samples live under `examples/`.
 
 ## Project layout
 
-- `src/autoedit/engine.py` — `build_story_plan` / `build_assemble_plan` / `build_montage_plan`
+- `src/autoedit/engine.py` — `build_story_plan` / `revise_story_plan` / assemble / montage
 - `src/autoedit/applier.py` — sole Resolve mutator
 - `src/autoedit/analysis/` — MediaCatalogue + cache
-- `src/autoedit/storyboard/` — generate / fill / convert
+- `src/autoedit/storyboard/` — generate / fill / pace / convert
+- `src/autoedit/analyzers/` — frames, visual, semantics, beats, silence, scenes
 - `src/autoedit/planners/` — silence, transcript, scenes, assemble, montage
 - `src/autoedit/ui/` — Flet desktop app
 - `src/autoedit/cli.py` / `mcp_server.py`
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Unit tests run in CI without Resolve or ffmpeg.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

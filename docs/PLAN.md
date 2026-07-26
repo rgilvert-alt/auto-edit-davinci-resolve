@@ -1,5 +1,7 @@
 # Auto Edit Engine for DaVinci Resolve
 
+> **Status:** Core engine is implemented (Story / Assemble / Montage, UI, CLI, MCP). Prefer [README.md](../README.md), [SETUP.md](SETUP.md), and [STORYBOARD.md](STORYBOARD.md) for current behavior. This document remains useful as the original architecture brief; the “Implementation todos” below are largely done.
+
 **Overview:** Build a Python auto-edit engine (silence removal, transcript editing, scene assembly, music montage) that analyzes footage, produces a frame-accurate EditPlan, and applies it to DaVinci Resolve Studio. Reuse [samuelgursky/davinci-resolve-mcp](https://github.com/samuelgursky/davinci-resolve-mcp) for Resolve control; expose our engine as both a CLI and its own MCP server.
 
 ## Implementation todos

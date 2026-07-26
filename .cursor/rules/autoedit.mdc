@@ -5,13 +5,13 @@ alwaysApply: true
 
 # Auto Edit Engine
 
-Implement per `docs/PLAN.md` and `HANDOFF.md`. This project targets **DaVinci Resolve Studio** on the machine where Cursor is running.
+Follow `README.md`, `docs/SETUP.md`, and `docs/STORYBOARD.md`. This project targets **DaVinci Resolve Studio** on the machine where Cursor is running. `docs/PLAN.md` is historical architecture context.
 
 ## Architecture
 
-Analyzers (transcription, silence, scenes, beats) → planners → frame-accurate `EditPlan` JSON → single `applier` → Resolve via `DaVinciResolveScript`.
+Analyzers (frames/visual/semantics, silence, scenes, beats, transcription) → planners / storyboard → frame-accurate `EditPlan` JSON → single `applier` → Resolve via `DaVinciResolveScript`.
 
-Reuse [samuelgursky/davinci-resolve-mcp](https://github.com/samuelgursky/davinci-resolve-mcp) for granular Resolve control. Build our own FastMCP + typer CLI for auto-edit workflows.
+Reuse [samuelgursky/davinci-resolve-mcp](https://github.com/samuelgursky/davinci-resolve-mcp) for granular Resolve control. FastMCP + typer CLI + Flet UI for auto-edit workflows.
 
 Timeline placement uses:
 
@@ -27,13 +27,15 @@ MediaPool.AppendToTimeline([{
 
 ## Locked decisions
 
-- Modes: silence cut, transcript edit, scene assembly, music montage
-- Surfaces: CLI **and** MCP (`analyze` / `plan_*` / `preview_plan` / `apply_plan`)
+- Modes: Story, Assemble, Montage (+ silence / transcript / scenes utilities)
+- Surfaces: CLI, MCP, and desktop UI (`analyze` / `plan_*` / `preview_plan` / `apply_plan`)
 - Frame math is source of truth; plans must be previewable as JSON before apply
+- Story refine mutates storyboard then re-converts — never a second Resolve apply path
+- Optional deps degrade with warnings (ffmpeg shot/beat fallbacks; CLIP optional)
 - Follow `docs/SETUP.md` for scripting env; Resolve must be running for live applies
 
 ## Do not
 
 - Re-ask the locked product decisions above
-- Skip Setup / Resolve connection smoke test before building planners
 - Invent a second timeline-apply path that bypasses EditPlan
+- Swallow analyzer failures silently (record warnings on catalogue/storyboard)

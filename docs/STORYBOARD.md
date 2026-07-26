@@ -23,12 +23,14 @@ Three layers stay separate:
 ```text
 analyze_catalogue(clips)          # ffmpeg frames → signals → CLIP tags
     → story_to_storyboard(story, target_duration_s)
-    → fill_storyboard(storyboard, media_catalogue)
-    → storyboard_to_edit_plan(...)   # optional per-shot markers
+    → fill_storyboard(storyboard, media_catalogue)   # + candidate shortlists
+    → snap_fills_to_beats(...)                       # when music is attached
+    → storyboard_to_edit_plan(...)                   # optional per-shot markers
     → EditPlan
     → applier.py
 ```
 
+Editor refine (UI) mutates slot `fill` / `locked` / order, then re-runs `storyboard_to_edit_plan` (or `revise_story_plan` to refill unlocked slots only).
 ## Analysis (what actually runs)
 
 1. **Frame sampling** (`analyzers/frames.py`): one ffmpeg pass, keyframes + fps budget (~400 frames max), 224×224 center crop. Tries VideoToolbox, falls back to software.
