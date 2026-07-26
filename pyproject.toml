@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autoedit"
+version = "0.1.0"
+description = "Auto-edit engine for DaVinci Resolve Studio: silence removal, transcript editing, scene assembly, music montage."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "TBD" }
+dependencies = [
+    "typer>=0.12",
+    "python-dotenv>=1.0",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+# Heavy analyzer backends. Installed on demand; imported lazily inside analyzers.
+analyzers = [
+    "faster-whisper>=1.0",
+    "scenedetect[opencv]>=0.6.4",
+    "librosa>=0.10",
+    "soundfile>=0.12",
+    "onnxruntime>=1.20",
+    "tokenizers>=0.20",
+]
+mcp = [
+    "fastmcp>=2.0",
+]
+ui = [
+    "flet>=0.25",
+]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+autoedit = "autoedit.cli:app"
+autoedit-mcp = "autoedit.mcp_server:main"
+autoedit-ui = "autoedit.ui.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

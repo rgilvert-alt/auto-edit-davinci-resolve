@@ -1,0 +1,1 @@
+"""Standalone desktop UI package."""

@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "title": "Mountain Ride",
+  "target_duration_s": 60,
+  "timeline_fps": null,
+  "style": "Adventure documentary",
+  "analysis_warnings": [],
+  "slots": [
+    {
+      "id": "s1",
+      "role": "opening",
+      "duration_s": 4,
+      "intent": "calm departure, beginning of journey",
+      "prefer": {
+        "analysis": ["scenes"],
+        "energy": "low",
+        "tags": ["road", "departure"]
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": null
+    },
+    {
+      "id": "s2",
+      "role": "progression",
+      "duration_s": 7,
+      "intent": "journey gaining momentum",
+      "prefer": {
+        "energy": "medium",
+        "motion": "medium"
+      },
+      "exclude": {},
+      "fill": null
+    },
+    {
+      "id": "s3",
+      "role": "climax",
+      "duration_s": 8,
+      "intent": "dramatic mountain riding and sense of scale",
+      "prefer": {
+        "energy": "high",
+        "tags": ["mountain"]
+      },
+      "exclude": {
+        "has_speech": true
+      },
+      "fill": {
+        "media_path": "/Volumes/TRIP/GX011129.MP4",
+        "start_s": 14.2,
+        "duration_s": 8.0,
+        "score": 0.87,
+        "reason": "matches 'dramatic mountain riding' (0.31 CLIP); strong motion; chronological fit",
+        "descriptor": "POV riding shot, gravel forest trail — strong motion, steady, bright",
+        "tags": ["POV riding shot", "forest trail", "motorcycle"],
+        "score_parts": {
+          "clip": 0.14,
+          "quality": 0.18,
+          "chronology": 0.20,
+          "steady": 0.05
+        }
+      }
+    }
+  ]
+}
