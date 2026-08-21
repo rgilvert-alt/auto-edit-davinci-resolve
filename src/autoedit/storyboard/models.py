@@ -138,6 +138,7 @@ class Storyboard:
     catalogue_path: str | None = None
     last_timeline_name: str | None = None
     last_plan_path: str | None = None
+    keep_shoot_order: bool = True
 
     @property
     def filled_count(self) -> int:
@@ -162,6 +163,7 @@ class Storyboard:
             "catalogue_path": self.catalogue_path,
             "last_timeline_name": self.last_timeline_name,
             "last_plan_path": self.last_plan_path,
+            "keep_shoot_order": self.keep_shoot_order,
             "slots": [s.to_dict() for s in self.slots],
         }
 
@@ -188,6 +190,7 @@ class Storyboard:
             catalogue_path=data.get("catalogue_path"),
             last_timeline_name=data.get("last_timeline_name"),
             last_plan_path=data.get("last_plan_path"),
+            keep_shoot_order=bool(data.get("keep_shoot_order", True)),
         )
 
     @classmethod

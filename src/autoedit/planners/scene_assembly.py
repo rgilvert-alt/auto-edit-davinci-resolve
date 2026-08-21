@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ..analyzers.common import Interval
-from ..config import seconds_to_frames
+from ..config import conform_timeline_frames, seconds_to_frames
 from ..models import ClipSegment, EditPlan, Marker
 
 _ORDERS = {"source", "longest", "shortest"}
@@ -66,7 +66,9 @@ def plan_scene_assembly(
             )
         )
         markers.append(Marker(frame=record, name=f"Scene {idx}", color="Green"))
-        record += seconds_to_frames((end_f - start_f) / source_fps, timeline_fps)
+        record += conform_timeline_frames(
+            end_f - start_f, source_fps, timeline_fps
+        )
 
     return EditPlan(
         timeline_name=timeline_name,

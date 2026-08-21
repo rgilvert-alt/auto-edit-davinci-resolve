@@ -63,6 +63,15 @@ def test_timeline_span_conforms_source_rate():
     assert clip.timeline_span(30.0) == 60
 
 
+def test_timeline_span_truncates_instead_of_rounding_up():
+    """101 source frames @50fps → 60.6s*30; truncate to 60 (not round to 61).
+
+    Rounding up left 1-frame gaps before the next cut in Resolve.
+    """
+    clip = ClipSegment("a.mov", 0, 101, record_frame=0, source_fps=50.0)
+    assert clip.timeline_span(30.0) == 60
+
+
 def test_timeline_span_matches_duration_when_rates_agree():
     clip = ClipSegment("a.mov", 0, 48, record_frame=0)
     assert clip.timeline_span(24.0) == 48

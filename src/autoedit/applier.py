@@ -1,7 +1,8 @@
 """The single path that turns an EditPlan into a Resolve timeline.
 
-No other module mutates timelines. Uses batched, positioned AppendToTimeline
-calls so cuts are frame-accurate, then adds markers and the optional music clip.
+No other module mutates timelines. Uses positioned AppendToTimeline calls
+(chained from each item's actual end so mixed-fps conform stays gap-free),
+then adds markers and the optional music clip.
 """
 
 from __future__ import annotations
@@ -42,21 +43,41 @@ def apply_plan(plan: EditPlan, client: ResolveClient | None = None) -> ApplyResu
     # relative to the timeline head, so shift them by that origin.
     timeline_start = int(timeline.GetStartFrame())
 
-    clip_infos = _build_clip_infos(plan, item_by_path, timeline_start)
-    if clip_infos:
-        appended = client.media_pool().AppendToTimeline(clip_infos)
-        if not appended:  # pragma: no cover - env dependent
-            raise RuntimeError("AppendToTimeline returned no items.")
+    clip_count = 0
+    if plan.clips:
+        # Place one-by-one and advance from Resolve's actual clip end so mixed
+        # fps conform cannot leave 1-frame holes between cuts.
+        cursor = timeline_start
+        planned_to_actual: dict[int, int] = {}
+        for clip in plan.clips:
+            info = {
+                "mediaPoolItem": item_by_path[_key(clip.media_path)],
+                "startFrame": clip.start_frame,
+                "endFrame": clip.end_frame - 1,
+                "trackIndex": clip.track_index,
+                "recordFrame": cursor,
+            }
+            appended = client.media_pool().AppendToTimeline([info])
+            if not appended:  # pragma: no cover - env dependent
+                raise RuntimeError("AppendToTimeline returned no items.")
+            planned_to_actual[clip.record_frame] = cursor - timeline_start
+            cursor = _next_timeline_cursor(
+                appended[0], cursor, clip, plan.fps
+            )
+            clip_count += 1
+    else:
+        planned_to_actual = {}
 
     music_applied = _apply_music(
         plan, client, item_by_path, timeline_start, timeline=timeline
     )
-    # Markers use the same absolute timeline clock as recordFrame.
-    marker_count = _apply_markers(plan, timeline, timeline_start)
+    marker_count = _apply_markers(
+        plan, timeline, timeline_start, planned_to_actual=planned_to_actual
+    )
 
     return ApplyResult(
         timeline_name=actual_name,
-        clip_count=len(clip_infos),
+        clip_count=clip_count,
         marker_count=marker_count,
         duration_frames=plan.duration_frames,
         music_applied=music_applied,
@@ -82,6 +103,7 @@ MUSIC_AUDIO_TRACK = 2
 def _build_clip_infos(
     plan: EditPlan, item_by_path: dict[str, Any], timeline_start: int = 0
 ) -> list[dict[str, Any]]:
+    """Build Resolve clipInfo dicts (also used by unit tests)."""
     infos: list[dict[str, Any]] = []
     for clip in plan.clips:
         infos.append(
@@ -96,6 +118,26 @@ def _build_clip_infos(
             }
         )
     return infos
+
+
+def _next_timeline_cursor(
+    item: Any, current_record: int, clip: Any, timeline_fps: float
+) -> int:
+    """Absolute timeline frame where the next clip should start."""
+    try:
+        start = item.GetStart()
+        dur = item.GetDuration()
+        if start is not None and dur is not None:
+            return int(start) + int(dur)
+    except Exception:
+        pass
+    try:
+        end = item.GetEnd()
+        if end is not None:
+            return int(end)
+    except Exception:
+        pass
+    return current_record + clip.timeline_span(timeline_fps)
 
 
 def _ensure_audio_tracks(timeline: Any, count: int) -> None:
@@ -139,13 +181,23 @@ def _apply_music(
 
 
 def _apply_markers(
-    plan: EditPlan, timeline: Any, timeline_start: int = 0
+    plan: EditPlan,
+    timeline: Any,
+    timeline_start: int = 0,
+    *,
+    planned_to_actual: dict[int, int] | None = None,
 ) -> int:
-    """Place markers. ``m.frame`` is plan-relative; shift by timeline origin."""
+    """Place markers. ``m.frame`` is plan-relative; shift by timeline origin.
+
+    When clips were re-rippled on apply, ``planned_to_actual`` remaps planned
+    record frames to the positions Resolve actually used.
+    """
     count = 0
+    remap = planned_to_actual or {}
     for m in plan.markers:
+        rel = remap.get(int(m.frame), int(m.frame))
         ok = timeline.AddMarker(
-            timeline_start + int(m.frame),
+            timeline_start + rel,
             m.color or "Blue",
             m.name or "",
             m.note or "",

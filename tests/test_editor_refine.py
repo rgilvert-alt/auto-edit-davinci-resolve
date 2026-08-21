@@ -162,6 +162,117 @@ def test_coverage_report_mentions_unused():
     assert "used" in report or "unused" in report
 
 
+def test_strict_chronology_fills_are_monotonic():
+    from autoedit.storyboard.filler import _capture_ranks, _segment_positions
+
+    cat = _catalogue()
+    board = story_to_storyboard(
+        "Morning road. Trail climb. Mountain pass. Sunset.",
+        target_duration_s=16.0,
+    )
+    board.keep_shoot_order = True
+    filled = fill_storyboard(board, cat, chronology_strict=True)
+    positions = _segment_positions(cat, _capture_ranks(cat))
+    pos_list = [
+        positions[s.fill.segment_id]
+        for s in filled.slots
+        if s.fill and s.fill.segment_id
+    ]
+    assert pos_list
+    assert pos_list == sorted(pos_list)
+
+
+def test_soft_chronology_can_pick_earlier_after_late_lock():
+    from autoedit.storyboard.filler import _capture_ranks, _segment_positions
+
+    cat = _catalogue()
+    positions = _segment_positions(cat, _capture_ranks(cat))
+    late_id = "b_001"
+    late_pos = positions[late_id]
+
+    board = story_to_storyboard(
+        "First beat. Second beat. Third beat.",
+        target_duration_s=12.0,
+    )
+    assert len(board.slots) >= 2
+    board.slots[0].fill = SlotFill(
+        media_path="/tmp/b.mov",
+        start_s=0.0,
+        duration_s=board.slots[0].duration_s,
+        score=1.0,
+        segment_id=late_id,
+    )
+    board.slots[0].locked = True
+    for slot in board.slots[1:]:
+        slot.fill = None
+        slot.candidates = []
+
+    soft = fill_storyboard(board, cat, chronology_strict=False)
+    soft_later = [
+        positions[s.fill.segment_id]
+        for s in soft.slots[1:]
+        if s.fill and s.fill.segment_id
+    ]
+    assert soft_later
+    assert any(p < late_pos - 1e-6 for p in soft_later)
+
+
+def test_strict_stops_when_no_later_footage():
+    """When nothing later remains, leave trailing slots empty — never go backward."""
+    from autoedit.storyboard.filler import _capture_ranks, _segment_positions
+
+    cat = _catalogue()
+    positions = _segment_positions(cat, _capture_ranks(cat))
+    late_id = "b_001"
+    late_pos = positions[late_id]
+
+    board = story_to_storyboard(
+        "First beat. Second beat. Third beat.",
+        target_duration_s=12.0,
+    )
+    board.slots[0].fill = SlotFill(
+        media_path="/tmp/b.mov",
+        start_s=0.0,
+        duration_s=10.0,  # entire late segment — nothing later remains
+        score=1.0,
+        segment_id=late_id,
+    )
+    board.slots[0].locked = True
+    for slot in board.slots[1:]:
+        slot.fill = None
+        slot.candidates = []
+
+    filled = fill_storyboard(board, cat, chronology_strict=True)
+    later_fills = [s.fill for s in filled.slots[1:] if s.fill]
+    assert later_fills == []
+    assert all(s.fill is None for s in filled.slots[1:])
+    assert any("Keep shoot order: stopped" in w for w in filled.analysis_warnings)
+    assert any("no later footage left" in w for w in filled.analysis_warnings)
+    # Locked late fill is the only fill; nothing earlier sneaks in.
+    only = [s.fill for s in filled.slots if s.fill]
+    assert len(only) == 1
+    assert only[0].segment_id == late_id
+    assert positions[late_id] == late_pos
+
+
+def test_no_identical_reuse_windows():
+    """Reuse must advance the cursor — never repeat the same in/out."""
+    cat = _catalogue()
+    # Demand more slots than unique segments so reuse would be tempted.
+    board = story_to_storyboard(
+        "A. B. C. D. E. F. G. H. I. J. K. L.",
+        target_duration_s=36.0,
+    )
+    filled = fill_storyboard(board, cat, chronology_strict=True)
+    windows = [
+        (s.fill.media_path, round(s.fill.start_s, 2), round(s.fill.duration_s, 2))
+        for s in filled.slots
+        if s.fill
+    ]
+    assert windows
+    assert len(windows) == len(set(windows)), f"duplicate windows: {windows}"
+
+
 def test_storyboard_v3_roundtrip_locked_candidates(tmp_path):
     board = story_to_storyboard("Trip.", target_duration_s=4.0)
     board.slots[0].locked = True
@@ -178,6 +289,7 @@ def test_storyboard_v3_roundtrip_locked_candidates(tmp_path):
     board.catalogue_path = "/tmp/x.catalogue.json"
     board.music_path = "/tmp/m.wav"
     board.revision = 3
+    board.keep_shoot_order = False
     path = tmp_path / "t.storyboard.json"
     board.save(path)
     loaded = type(board).load(path)
@@ -186,3 +298,4 @@ def test_storyboard_v3_roundtrip_locked_candidates(tmp_path):
     assert loaded.slots[0].candidates
     assert loaded.catalogue_path.endswith("catalogue.json")
     assert loaded.revision == 3
+    assert loaded.keep_shoot_order is False

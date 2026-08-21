@@ -21,6 +21,7 @@ DUPLICATE_SIM_THRESHOLD = 0.92
 class FillContext:
     used_segment_ids: set[str] = field(default_factory=set)
     chronology_preferred: bool = True
+    chronology_strict: bool = True
     segment_cursor: dict[str, float] = field(default_factory=dict)
     last_media_path: str | None = None
     file_use_counts: dict[str, int] = field(default_factory=dict)
@@ -28,6 +29,9 @@ class FillContext:
     average_shots_per_file: float = 1.0
     intent_embedding: np.ndarray | None = None
     recent_embeddings: list[np.ndarray] = field(default_factory=list)
+    last_segment_position: float | None = None
+    last_fill_segment_id: str | None = None
+    last_fill_start_s: float | None = None
 
 
 @dataclass
@@ -65,46 +69,95 @@ def fill_storyboard(
     media_catalogue: MediaCatalogue,
     *,
     chronology_preferred: bool = True,
+    chronology_strict: bool | None = None,
     candidate_count: int = CANDIDATE_COUNT,
 ) -> Storyboard:
-    """Fill empty/unlocked slots; leave locked fills untouched."""
+    """Fill empty/unlocked slots; leave locked fills untouched.
+
+    When ``chronology_strict`` (default True, or ``storyboard.keep_shoot_order``),
+    each fill must be at or after the previous shot in shoot order.
+    """
     if not media_catalogue.clips:
         raise ValueError("MediaCatalogue has no clips")
 
     if media_catalogue.warnings and not storyboard.analysis_warnings:
         storyboard.analysis_warnings = list(media_catalogue.warnings)
 
-    ctx = FillContext(chronology_preferred=chronology_preferred)
+    if chronology_strict is None:
+        chronology_strict = bool(getattr(storyboard, "keep_shoot_order", True))
+
+    ctx = FillContext(
+        chronology_preferred=chronology_preferred,
+        chronology_strict=chronology_strict,
+    )
     capture_rank = _capture_ranks(media_catalogue)
     positions = _segment_positions(media_catalogue, capture_rank)
-    _seed_context_from_locked(storyboard, media_catalogue, ctx)
 
-    open_slots = [s for s in storyboard.slots if _needs_fill(s)]
+    open_count = sum(1 for s in storyboard.slots if _needs_fill(s))
+    locked_filled = sum(1 for s in storyboard.slots if s.locked and s.fill)
     ctx.average_shots_per_file = max(
-        1.0,
-        (len(open_slots) + sum(1 for s in storyboard.slots if s.locked and s.fill))
-        / max(1, len(media_catalogue.clips)),
+        1.0, (open_count + locked_filled) / max(1, len(media_catalogue.clips))
     )
-    last_index = max(1, len(open_slots) - 1)
+    last_index = max(1, open_count - 1)
+    open_i = 0
 
-    for i, slot in enumerate(open_slots):
-        ctx.slot_position = i / last_index
+    by_id = {seg.id: (clip, seg) for clip, seg in media_catalogue.all_segments()}
+    stopped = False
+
+    for slot in storyboard.slots:
+        if slot.locked and slot.fill is not None:
+            _seed_one_fill(slot.fill, media_catalogue, by_id, ctx, positions)
+            continue
+        if not _needs_fill(slot):
+            if slot.fill is not None:
+                _seed_one_fill(slot.fill, media_catalogue, by_id, ctx, positions)
+            continue
+
+        if stopped:
+            slot.fill = None
+            slot.candidates = []
+            continue
+
+        ctx.slot_position = open_i / last_index
+        open_i += 1
         ctx.intent_embedding = _intent_embedding(slot.intent)
+
+        # Unused first; then forward reuse (later portion at/after cursor). Never go backward.
         ranked = rank_candidates(
             slot,
             media_catalogue,
             ctx,
             positions,
             top_n=candidate_count,
+            unused_only=True,
         )
+        if not ranked:
+            ranked = rank_candidates(
+                slot,
+                media_catalogue,
+                ctx,
+                positions,
+                top_n=candidate_count,
+                unused_only=False,
+            )
         if not ranked:
             slot.fill = None
             slot.candidates = []
+            if ctx.chronology_strict:
+                n_filled = sum(1 for s in storyboard.slots if s.fill is not None)
+                warn = (
+                    f"Keep shoot order: stopped after {n_filled} shots — "
+                    "no later footage left (requested longer than remaining shoot)"
+                )
+                if warn not in storyboard.analysis_warnings:
+                    storyboard.analysis_warnings.append(warn)
+                stopped = True
             continue
         best = ranked[0]
         slot.fill = best.to_fill()
         slot.candidates = [r.to_fill() for r in ranked[1:]]
         _commit_choice(ctx, best.clip, best.seg, best.offset, best.duration)
+        ctx.last_segment_position = positions.get(best.seg.id, ctx.last_segment_position)
 
     return storyboard
 
@@ -114,6 +167,7 @@ def regenerate_unlocked(
     media_catalogue: MediaCatalogue,
     *,
     chronology_preferred: bool = True,
+    chronology_strict: bool | None = None,
 ) -> Storyboard:
     """Clear unlocked fills and refill; locked shots stay put."""
     for slot in storyboard.slots:
@@ -122,7 +176,10 @@ def regenerate_unlocked(
             slot.candidates = []
     storyboard.revision = int(storyboard.revision or 1) + 1
     return fill_storyboard(
-        storyboard, media_catalogue, chronology_preferred=chronology_preferred
+        storyboard,
+        media_catalogue,
+        chronology_preferred=chronology_preferred,
+        chronology_strict=chronology_strict,
     )
 
 
@@ -133,54 +190,119 @@ def rank_candidates(
     positions: dict[str, float] | None = None,
     *,
     top_n: int = CANDIDATE_COUNT,
+    enforce_chronology: bool | None = None,
+    unused_only: bool | None = None,
 ) -> list[RankedCandidate]:
-    """Return the top-N scored candidates for a slot (best first)."""
+    """Return the top-N scored candidates for a slot (best first).
+
+    When ``unused_only`` is True, only unused segments are considered.
+    When False, only reuse of already-used segments (advancing the segment
+    cursor — never restarting at the same in-point).
+    When None (default), try unused first, then reuse.
+    """
     if positions is None:
         positions = _segment_positions(media_catalogue, _capture_ranks(media_catalogue))
 
+    strict = (
+        ctx.chronology_strict if enforce_chronology is None else enforce_chronology
+    )
     min_usable = min(MIN_SHOT_S, slot.duration_s)
     scored: list[RankedCandidate] = []
 
-    for reusing in (False, True):
+    if unused_only is True:
+        reuse_passes = (False,)
+    elif unused_only is False:
+        reuse_passes = (True,)
+    else:
+        reuse_passes = (False, True)
+
+    for reusing in reuse_passes:
+        horizons: tuple[float, ...]
+        if strict and not reusing:
+            # Walk forward: only look a little ahead; widen if the window is empty.
+            horizons = (0.12, 0.25, 0.45, 1.0)
+        else:
+            horizons = (1.0,)
+
         batch: list[RankedCandidate] = []
-        for clip, seg in media_catalogue.all_segments():
-            cursor = ctx.segment_cursor.get(seg.id, 0.0)
-            offset = 0.0 if reusing else cursor
-            available = seg.duration_s - offset
-            if available < min_usable:
-                continue
-            if seg.id in ctx.used_segment_ids and not reusing:
-                continue
-            result = score_candidate(
-                slot,
-                seg,
-                clip,
-                ctx,
-                positions.get(seg.id, 0.5),
-                allow_reuse=True,
-                available_s=available,
-            )
-            score = result.score
-            reason = result.reason
-            parts = dict(result.parts)
-            if reusing:
-                score *= 0.75
-                reason = f"No unused footage left; reusing segment. {reason}"
-                parts["reuse"] = -0.25
-                result = ScoreResult(score, reason, parts)
-            batch.append(
-                RankedCandidate(
-                    score=score,
-                    clip=clip,
-                    seg=seg,
-                    result=result,
-                    offset=offset,
-                    duration=min(slot.duration_s, available),
+        for horizon in horizons:
+            batch = []
+            last = ctx.last_segment_position
+            for clip, seg in media_catalogue.all_segments():
+                seg_pos = positions.get(seg.id, 0.5)
+                if strict:
+                    if last is not None and seg_pos < last - 1e-6:
+                        continue
+                    if not reusing:
+                        floor = 0.0 if last is None else last
+                        if seg_pos > floor + horizon + 1e-6:
+                            continue
+                if reusing:
+                    if seg.id not in ctx.used_segment_ids:
+                        continue
+                    offset = ctx.segment_cursor.get(seg.id, 0.0)
+                else:
+                    if seg.id in ctx.used_segment_ids:
+                        continue
+                    offset = ctx.segment_cursor.get(seg.id, 0.0)
+                available = seg.duration_s - offset
+                if available < min_usable:
+                    continue
+                abs_start = seg.start_s + offset
+                if (
+                    ctx.last_fill_segment_id == seg.id
+                    and ctx.last_fill_start_s is not None
+                    and abs(abs_start - ctx.last_fill_start_s) < 0.05
+                ):
+                    continue
+                result = score_candidate(
+                    slot,
+                    seg,
+                    clip,
+                    ctx,
+                    seg_pos,
+                    allow_reuse=True,
+                    available_s=available,
                 )
-            )
+                score = result.score
+                reason = result.reason
+                parts = dict(result.parts)
+                if reusing:
+                    score *= 0.55
+                    reason = f"Reusing later portion of segment. {reason}"
+                    parts["reuse"] = -0.45
+                    result = ScoreResult(score, reason, parts)
+                if ctx.last_media_path == clip.media_path:
+                    score -= 0.08
+                    parts["same_file"] = parts.get("same_file", 0.0) - 0.08
+                    result = ScoreResult(score, reason, parts)
+                batch.append(
+                    RankedCandidate(
+                        score=score,
+                        clip=clip,
+                        seg=seg,
+                        result=result,
+                        offset=offset,
+                        duration=min(slot.duration_s, available),
+                    )
+                )
+            if batch:
+                break
+
         if batch:
             batch.sort(key=lambda c: c.score, reverse=True)
-            # Deduplicate by segment id, keep best score.
+            # Under strict, among near-tied scores prefer the earlier shot.
+            if strict and len(batch) > 1:
+                best_score = batch[0].score
+                near = [c for c in batch if c.score >= best_score - 0.12]
+                near.sort(
+                    key=lambda c: (
+                        positions.get(c.seg.id, 0.5),
+                        -c.score,
+                    )
+                )
+                rest = [c for c in batch if c not in near]
+                batch = near + rest
             seen: set[str] = set()
             for cand in batch:
                 if cand.seg.id in seen:
@@ -379,13 +501,29 @@ def score_candidate(
         score -= 0.1
         parts["same_window"] = -0.1
 
-    if ctx.chronology_preferred:
+    if ctx.chronology_preferred and not ctx.chronology_strict:
         closeness = 1.0 - min(1.0, abs(segment_position - ctx.slot_position))
         chrono = 0.22 * closeness
         score += chrono
         parts["chronology"] = chrono
         if closeness >= 0.8:
             reasons.append("chronological fit")
+    elif ctx.chronology_strict:
+        # Walk the shoot forward: prefer the next unused footage, not a late CLIP hit.
+        if ctx.last_segment_position is None:
+            early = 0.4 * (1.0 - min(1.0, segment_position))
+            score += early
+            parts["chronology"] = early
+            if segment_position < 0.25:
+                reasons.append("chronological fit")
+        else:
+            ahead = segment_position - ctx.last_segment_position
+            if ahead >= 0:
+                forward = 0.4 * max(0.0, 1.0 - min(1.0, ahead * 4.0))
+                score += forward
+                parts["chronology"] = forward
+                if ahead < 0.2:
+                    reasons.append("chronological fit")
 
     if not reasons:
         reasons.append(segment.description or "best available under current scoring")
@@ -399,29 +537,35 @@ def _needs_fill(slot: StorySlot) -> bool:
     return slot.fill is None or not slot.fill.media_path
 
 
-def _seed_context_from_locked(
-    storyboard: Storyboard, catalogue: MediaCatalogue, ctx: FillContext
+def _seed_one_fill(
+    fill: SlotFill,
+    catalogue: MediaCatalogue,
+    by_id: dict[str, tuple[MediaClip, MediaSegment]],
+    ctx: FillContext,
+    positions: dict[str, float],
 ) -> None:
-    """Treat locked fills as already committed so regenerate won't steal them."""
-    by_id = {seg.id: (clip, seg) for clip, seg in catalogue.all_segments()}
-    for slot in storyboard.slots:
-        if not (slot.locked and slot.fill):
-            continue
-        fill = slot.fill
-        pair = by_id.get(fill.segment_id or "")
-        if pair is None:
-            pair = _find_segment(catalogue, fill)
-        if pair is not None:
-            clip, seg = pair
-            offset = max(0.0, fill.start_s - seg.start_s)
-            _commit_choice(ctx, clip, seg, offset, fill.duration_s)
-        else:
-            if fill.segment_id:
-                ctx.used_segment_ids.add(fill.segment_id)
-            ctx.last_media_path = fill.media_path
-            ctx.file_use_counts[fill.media_path] = (
-                ctx.file_use_counts.get(fill.media_path, 0) + 1
-            )
+    """Treat an existing fill as already committed (locked or already placed)."""
+    pair = by_id.get(fill.segment_id or "")
+    if pair is None:
+        pair = _find_segment(catalogue, fill)
+    if pair is not None:
+        clip, seg = pair
+        offset = max(0.0, fill.start_s - seg.start_s)
+        _commit_choice(ctx, clip, seg, offset, fill.duration_s)
+        ctx.last_segment_position = positions.get(seg.id, ctx.last_segment_position)
+        ctx.last_fill_segment_id = seg.id
+        ctx.last_fill_start_s = fill.start_s
+    else:
+        if fill.segment_id:
+            ctx.used_segment_ids.add(fill.segment_id)
+            if fill.segment_id in positions:
+                ctx.last_segment_position = positions[fill.segment_id]
+        ctx.last_media_path = fill.media_path
+        ctx.last_fill_segment_id = fill.segment_id
+        ctx.last_fill_start_s = fill.start_s
+        ctx.file_use_counts[fill.media_path] = (
+            ctx.file_use_counts.get(fill.media_path, 0) + 1
+        )
 
 
 def _find_segment(
@@ -445,6 +589,8 @@ def _commit_choice(
     ctx.used_segment_ids.add(seg.id)
     ctx.segment_cursor[seg.id] = offset + duration
     ctx.last_media_path = clip.media_path
+    ctx.last_fill_segment_id = seg.id
+    ctx.last_fill_start_s = seg.start_s + offset
     ctx.file_use_counts[clip.media_path] = (
         ctx.file_use_counts.get(clip.media_path, 0) + 1
     )

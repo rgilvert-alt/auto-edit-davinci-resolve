@@ -66,11 +66,13 @@ Slots also carry editor state:
 - `locked` — regenerate unlocked leaves this fill alone
 - `candidates` — ranked alternates for Swap in the UI
 
-Storyboard metadata: `revision`, `catalogue_path`, `music_path`, `last_timeline_name`, `last_plan_path`.
+Storyboard metadata: `revision`, `catalogue_path`, `music_path`, `last_timeline_name`, `last_plan_path`, `keep_shoot_order`.
 
 When music is attached, Story mode snaps cut points toward nearby beats (`snap_fills_to_beats`) after fill. Beat times come from librosa when installed, otherwise an ffmpeg + numpy onset/tempo fallback (no PyTorch/llvmlite required).
 
 Scarcity: if no exact visual exists, the filler picks the closest available segment and explains the approximation in `reason`. Near-duplicate embeddings and overused files are penalized.
+
+Story fill defaults to **monotonic shoot order** (`keep_shoot_order`, UI: Keep shoot order): each new shot must be at or after the previous in capture/filename order. When later footage runs out, fill **stops** (remaining slots stay empty; cut may be shorter than Sequence length) instead of jumping backward. Turn the toggle off for freer CLIP-first soft chronology.
 
 ## Evidence surfaces
 
