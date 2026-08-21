@@ -94,11 +94,18 @@ def main() -> None:
         duration_field = ft.TextField(
             label="Sequence length (sec)", value="60", width=180
         )
+        keep_order_cb = ft.Checkbox(
+            label="Keep shoot order",
+            value=True,
+            tooltip="Fill shots in capture/filename order (monotonic). Off = freer CLIP-first montage.",
+        )
         timeline_field = ft.TextField(label="Timeline", value="First Cut", width=220)
         fps_field = ft.TextField(label="FPS (empty = Auto)", value="", width=160)
         beats_field = ft.TextField(label="Beats per clip", value="4", width=140)
         story_section = ft.Column([ft.Text("STORY", weight=ft.FontWeight.BOLD), story_field])
-        controls_row = ft.Row([assemble_opt, style_dd, duration_field, beats_field])
+        controls_row = ft.Row(
+            [assemble_opt, style_dd, duration_field, keep_order_cb, beats_field]
+        )
 
         def set_status(msg: str, *, error: bool = False) -> None:
             status.value = msg
@@ -111,6 +118,7 @@ def main() -> None:
             assemble_opt.visible = m == "assemble"
             style_dd.visible = m == "story"
             duration_field.visible = m == "story"
+            keep_order_cb.visible = m == "story"
             beats_field.visible = m == "montage"
             revise_btn.visible = m == "story"
             page.update()
@@ -205,7 +213,7 @@ def main() -> None:
         async def pick_clips(_e) -> None:
             set_status("Opening clip picker…")
             try:
-                files = await ft.FilePicker().pick_files(
+                files = await picker.pick_files(
                     dialog_title="Select video clips",
                     file_type=ft.FilePickerFileType.CUSTOM,
                     allowed_extensions=VIDEO_EXTENSIONS,
@@ -225,7 +233,7 @@ def main() -> None:
         async def pick_folder_btn(_e) -> None:
             set_status("Opening folder picker…")
             try:
-                folder = await ft.FilePicker().get_directory_path(
+                folder = await picker.get_directory_path(
                     dialog_title="Select a folder of clips"
                 )
             except Exception as exc:
@@ -244,7 +252,7 @@ def main() -> None:
         async def pick_music(_e) -> None:
             set_status("Opening music picker…")
             try:
-                files = await ft.FilePicker().pick_files(
+                files = await picker.pick_files(
                     dialog_title="Select music",
                     file_type=ft.FilePickerFileType.CUSTOM,
                     allowed_extensions=AUDIO_EXTENSIONS,
@@ -265,6 +273,9 @@ def main() -> None:
             music_path[0] = None
             music_label.value = "No music"
             set_status("Music cleared")
+
+        picker = ft.FilePicker()
+        page.services.append(picker)
 
         def persist_board_and_plan() -> EditPlan | None:
             board = last_storyboard[0]
@@ -579,6 +590,7 @@ def main() -> None:
             story_text = (story_field.value or "").strip()
             duration = float(duration_field.value or "60")
             style = style_dd.value
+            keep_shoot_order = bool(keep_order_cb.value)
             per_clip = assemble_opt.value or "scenes"
             beats = int(beats_field.value or "4")
             music = music_path[0]
@@ -602,6 +614,7 @@ def main() -> None:
                             timeline_fps=fps,
                             save_storyboard_path=sb_path,
                             on_progress=on_progress,
+                            keep_shoot_order=keep_shoot_order,
                         )
                         board = Storyboard.load(sb_path)
                         storyboard_path[0] = sb_path
@@ -673,6 +686,8 @@ def main() -> None:
                 try:
                     # Prefer revision-named timeline for the next apply.
                     rev_board = Storyboard.load(path)
+                    rev_board.keep_shoot_order = bool(keep_order_cb.value)
+                    rev_board.save(path)
                     rev_name = f"{name} r{rev_board.revision + 1}"
                     plan = engine.revise_story_plan(
                         path,

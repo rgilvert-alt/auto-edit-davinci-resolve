@@ -245,6 +245,7 @@ def build_story_plan(
     save_catalogue_path: str | Path | None = None,
     on_progress: Callable[[int, int, str], None] | None = None,
     snap_to_beats: bool = True,
+    keep_shoot_order: bool = True,
 ) -> EditPlan:
     """Autonomous first cut: catalogue → storyboard → fill → EditPlan."""
     from .analysis import analyze_catalogue
@@ -282,7 +283,10 @@ def build_story_plan(
     board.catalogue_path = str(cat_path)
     board.music_path = music_path
     board.revision = 1
-    board = fill_storyboard(board, catalogue)
+    board.keep_shoot_order = keep_shoot_order
+    board = fill_storyboard(
+        board, catalogue, chronology_strict=board.keep_shoot_order
+    )
 
     if music_path and snap_to_beats:
         try:
@@ -381,7 +385,9 @@ def revise_story_plan(
     if not board.catalogue_path:
         raise ValueError("Storyboard has no catalogue_path; create a first cut first")
     catalogue = MediaCatalogue.load(board.catalogue_path)
-    board = regenerate_unlocked(board, catalogue)
+    board = regenerate_unlocked(
+        board, catalogue, chronology_strict=board.keep_shoot_order
+    )
 
     if board.music_path and snap_to_beats:
         try:

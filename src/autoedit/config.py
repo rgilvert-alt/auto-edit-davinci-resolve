@@ -74,3 +74,24 @@ def frames_to_seconds(frames: int, fps: float) -> float:
     if fps <= 0:
         raise ValueError(f"fps must be positive, got {fps}")
     return frames / fps
+
+
+def conform_timeline_frames(
+    source_frames: int, source_fps: float, timeline_fps: float
+) -> int:
+    """Timeline frames occupied after conforming ``source_frames`` to ``timeline_fps``.
+
+    Uses truncation (not round-half-up). Rounding up made AutoEdit advance
+    ``recordFrame`` one frame past where Resolve typically ends the previous
+    clip on mixed-rate timelines (e.g. 50→30), leaving systematic 1-frame gaps.
+    """
+    if source_fps <= 0 or timeline_fps <= 0:
+        raise ValueError(
+            f"fps must be positive, got source_fps={source_fps}, "
+            f"timeline_fps={timeline_fps}"
+        )
+    if source_frames <= 0:
+        return 0
+    if abs(source_fps - timeline_fps) < 1e-6:
+        return int(source_frames)
+    return max(1, int(source_frames * timeline_fps / source_fps))

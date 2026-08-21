@@ -11,7 +11,7 @@ import re
 
 from ..analyzers.common import Interval
 from ..analyzers.transcription import Transcript
-from ..config import seconds_to_frames
+from ..config import conform_timeline_frames, seconds_to_frames
 from ..models import ClipSegment, EditPlan
 
 
@@ -91,7 +91,9 @@ def plan_transcript_edit(
                 source_fps=source_fps,
             )
         )
-        record += seconds_to_frames((end_f - start_f) / source_fps, timeline_fps)
+        record += conform_timeline_frames(
+            end_f - start_f, source_fps, timeline_fps
+        )
 
     return EditPlan(
         timeline_name=timeline_name,

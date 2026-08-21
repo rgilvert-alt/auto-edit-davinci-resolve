@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ..analysis.catalogue import MediaCatalogue
-from ..config import seconds_to_frames
+from ..config import conform_timeline_frames, seconds_to_frames
 from ..models import ClipSegment, EditPlan, Marker, MusicTrack
 from .models import Storyboard
 
@@ -44,7 +44,7 @@ def storyboard_to_edit_plan(
         end_f = seconds_to_frames(fill.start_s + fill.duration_s, source_fps)
         if end_f <= start_f:
             end_f = start_f + max(1, seconds_to_frames(fill.duration_s, source_fps))
-        span = int(round((end_f - start_f) / source_fps * timeline_fps))
+        span = conform_timeline_frames(end_f - start_f, source_fps, timeline_fps)
         if span <= 0:
             continue
         clips.append(

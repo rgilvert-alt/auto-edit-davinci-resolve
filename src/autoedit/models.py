@@ -49,7 +49,10 @@ class ClipSegment:
 
     def timeline_span(self, timeline_fps: float) -> int:
         """How many timeline frames this subclip occupies once conformed."""
-        return int(round(self.duration_seconds(timeline_fps) * timeline_fps))
+        from .config import conform_timeline_frames
+
+        fps = self.source_fps or timeline_fps
+        return conform_timeline_frames(self.duration_frames, fps, timeline_fps)
 
     def validate(self) -> None:
         if self.end_frame <= self.start_frame:
