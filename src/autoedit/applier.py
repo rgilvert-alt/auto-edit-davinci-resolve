@@ -48,7 +48,9 @@ def apply_plan(plan: EditPlan, client: ResolveClient | None = None) -> ApplyResu
         if not appended:  # pragma: no cover - env dependent
             raise RuntimeError("AppendToTimeline returned no items.")
 
-    music_applied = _apply_music(plan, client, item_by_path, timeline_start)
+    music_applied = _apply_music(
+        plan, client, item_by_path, timeline_start, timeline=timeline
+    )
     # Markers use the same absolute timeline clock as recordFrame.
     marker_count = _apply_markers(plan, timeline, timeline_start)
 
@@ -72,6 +74,11 @@ def _referenced_media(plan: EditPlan) -> list[str]:
     return list(seen)
 
 
+# Resolve AppendToTimeline mediaType: 1 = video only, 2 = audio only.
+# Omitting mediaType places linked video + audio when the clip has sound.
+MUSIC_AUDIO_TRACK = 2
+
+
 def _build_clip_infos(
     plan: EditPlan, item_by_path: dict[str, Any], timeline_start: int = 0
 ) -> list[dict[str, Any]]:
@@ -86,10 +93,23 @@ def _build_clip_infos(
                 "endFrame": clip.end_frame - 1,
                 "trackIndex": clip.track_index,
                 "recordFrame": timeline_start + clip.record_frame,
-                "mediaType": 1,  # video + audio
             }
         )
     return infos
+
+
+def _ensure_audio_tracks(timeline: Any, count: int) -> None:
+    """Add audio tracks until ``timeline`` has at least ``count`` of them."""
+    if timeline is None or count < 1:
+        return
+    try:
+        existing = int(timeline.GetTrackCount("audio") or 0)
+    except Exception:  # pragma: no cover - env dependent
+        return
+    while existing < count:
+        if not timeline.AddTrack("audio"):  # pragma: no cover - env dependent
+            break
+        existing += 1
 
 
 def _apply_music(
@@ -97,15 +117,20 @@ def _apply_music(
     client: ResolveClient,
     item_by_path: dict[str, Any],
     timeline_start: int = 0,
+    *,
+    timeline: Any = None,
 ) -> bool:
+    """Lay optional music on A2 so it sits under linked clip audio on A1."""
     if plan.music is None:
         return False
     music = plan.music
+    track_index = MUSIC_AUDIO_TRACK
+    _ensure_audio_tracks(timeline, track_index)
     item = item_by_path[_key(music.media_path)]
     info = {
         "mediaPoolItem": item,
         "startFrame": 0,
-        "trackIndex": music.track_index,
+        "trackIndex": track_index,
         "recordFrame": timeline_start + music.start_frame,
         "mediaType": 2,  # audio only
     }

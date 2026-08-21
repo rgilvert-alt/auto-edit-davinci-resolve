@@ -77,7 +77,7 @@ def plan_music_montage(
         if add_beat_markers:
             markers.append(Marker(frame=record_f, name=f"Beat {idx + 1}", color="Cyan"))
 
-    music = MusicTrack(media_path=music_path, start_frame=0, track_index=1)
+    music = MusicTrack(media_path=music_path, start_frame=0, track_index=2)
 
     return EditPlan(
         timeline_name=timeline_name,
