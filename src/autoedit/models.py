@@ -80,11 +80,11 @@ class Marker:
 
 @dataclass
 class MusicTrack:
-    """Music laid on an audio track, by convention starting at frame 0."""
+    """Music bed on an audio track (A2 by default; clip audio uses A1)."""
 
     media_path: str
     start_frame: int = 0
-    track_index: int = 1
+    track_index: int = 2
     name: str | None = None
 
 

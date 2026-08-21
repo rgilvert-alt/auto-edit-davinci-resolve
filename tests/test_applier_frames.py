@@ -1,6 +1,6 @@
 """Frame translation done by the applier, without touching Resolve."""
 
-from autoedit.applier import _build_clip_infos, _key
+from autoedit.applier import MUSIC_AUDIO_TRACK, _build_clip_infos, _key
 from autoedit.models import ClipSegment, EditPlan, MusicTrack
 
 
@@ -43,11 +43,28 @@ def test_source_in_out_are_untouched_by_timeline_origin():
     assert [(i["startFrame"], i["endFrame"]) for i in infos] == [(0, 99), (500, 599)]
 
 
+def test_clip_infos_omit_media_type_for_linked_av():
+    """Omit mediaType so Resolve places linked video + audio (1 would be video-only)."""
+    plan = _plan()
+    infos = _build_clip_infos(plan, _items(plan), timeline_start=0)
+    assert all("mediaType" not in i for i in infos)
+
+
 def test_music_record_frame_shifts_by_origin():
     from autoedit.applier import _apply_music
 
     plan = EditPlan("T", 30.0, clips=[], music=MusicTrack("song.wav"))
     captured: dict[str, object] = {}
+    added_tracks: list[str] = []
+
+    class FakeTimeline:
+        def GetTrackCount(self, track_type):
+            assert track_type == "audio"
+            return 1
+
+        def AddTrack(self, track_type):
+            added_tracks.append(track_type)
+            return True
 
     class FakePool:
         def AppendToTimeline(self, infos):
@@ -59,8 +76,18 @@ def test_music_record_frame_shifts_by_origin():
             return FakePool()
 
     applied = _apply_music(
-        plan, FakeClient(), {_key("song.wav"): object()}, timeline_start=108000
+        plan,
+        FakeClient(),
+        {_key("song.wav"): object()},
+        timeline_start=108000,
+        timeline=FakeTimeline(),
     )
     assert applied is True
     assert captured["recordFrame"] == 108000
     assert captured["mediaType"] == 2
+    assert captured["trackIndex"] == MUSIC_AUDIO_TRACK == 2
+    assert added_tracks == ["audio"]
+
+
+def test_music_track_default_is_a2():
+    assert MusicTrack("song.wav").track_index == 2
